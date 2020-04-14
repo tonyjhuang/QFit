@@ -9,7 +9,7 @@ class UserRepository(private val db: QfDb) {
     }
 
     fun create(id: String, name: String, photoUrl: String, callback: (User) -> Unit) {
-        db.create("users", id, User(name, photoUrl), callback)
+        db.create(PATH, id, User(name, photoUrl), callback)
     }
 
     companion object {

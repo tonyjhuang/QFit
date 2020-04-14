@@ -23,9 +23,9 @@ import com.tonyjhuang.qfit.data.GroupRepository
 import com.tonyjhuang.qfit.data.QfDb
 import com.tonyjhuang.qfit.ui.creategroup.CreateGroupActivity
 
-class GroupListFragment : Fragment() {
+class ViewGroupFragment : Fragment() {
 
-    private lateinit var viewModel: GroupListViewModel
+    private lateinit var viewModel: ViewGroupViewModel
     private val adapter = GroupRecyclerViewAdapter(::onGroupItemClicked)
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -34,13 +34,13 @@ class GroupListFragment : Fragment() {
         viewModel =
             ViewModelProviders.of(
                 this,
-                GroupListViewModelFactory(GroupRepository(QfDb(Firebase.database.reference)))
-            ).get(GroupListViewModel::class.java)
+                ViewGroupViewModelFactory(GroupRepository(QfDb(Firebase.database.reference)))
+            ).get(ViewGroupViewModel::class.java)
 
-        val view = inflater.inflate(R.layout.fragment_group_list, container, false)
+        val view = inflater.inflate(R.layout.fragment_view_group, container, false)
         with(view.findViewById<RecyclerView>(R.id.list)) {
             layoutManager = LinearLayoutManager(context)
-            adapter = this@GroupListFragment.adapter
+            adapter = this@ViewGroupFragment.adapter
         }
         view.findViewById<View>(R.id.add_group).setOnClickListener {
             getNewGroupName(viewModel::addNewGroup)
@@ -60,10 +60,10 @@ class GroupListFragment : Fragment() {
         })
         viewModel.events.observe(this, Observer {
             when(it) {
-                is GroupListViewModel.Event.CreateNewGroupEvent -> {
+                is ViewGroupViewModel.Event.CreateNewGroupEvent -> {
                     launchCreateGroupFlow(it.name)
                 }
-                is GroupListViewModel.Event.ViewGroupEvent -> {
+                is ViewGroupViewModel.Event.ViewGroupEvent -> {
                     launchViewGroupFlow(it.name)
                 }
             }
@@ -104,7 +104,7 @@ class GroupListFragment : Fragment() {
         super.onActivityResult(requestCode, resultCode, data)
         if (requestCode == RC_CREATE_GROUP) {
             if (resultCode == Activity.RESULT_OK) {
-                findNavController().navigate(R.id.action_group_list_to_view_group)
+                findNavController().navigate(R.id.action_FirstFragment_to_SecondFragment)
             } else {
                 // TODO Handle error
             }
@@ -116,5 +116,3 @@ class GroupListFragment : Fragment() {
         const val RC_CREATE_GROUP = 0
     }
 }
-
-data class GroupItem(val name: String, val totalMembers: Int)

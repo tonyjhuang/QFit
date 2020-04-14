@@ -4,8 +4,8 @@ import com.google.firebase.database.IgnoreExtraProperties
 
 @IgnoreExtraProperties
 data class Group(
-    val members: MutableMap<String, Boolean>?,
-    val goals: MutableMap<String, GroupGoal>?)
+    val members: Map<String, Boolean>? = emptyMap(),
+    val goals: Map<String, GroupGoal>? = emptyMap())
 
 @IgnoreExtraProperties
 data class GroupGoal(val amount: Int)

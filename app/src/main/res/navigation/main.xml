@@ -15,5 +15,19 @@
         android:id="@+id/navigation_group_list"
         android:name="com.tonyjhuang.qfit.ui.groups.GroupListFragment"
         android:label="@string/title_group_list"
-        tools:layout="@layout/fragment_group_list" />
+        tools:layout="@layout/fragment_group_list" >
+
+        <action
+            android:id="@+id/action_group_list_to_view_group"
+            app:destination="@id/navigation_view_group" />
+
+    </fragment>
+
+    <fragment
+        android:id="@+id/navigation_view_group"
+        android:name="com.tonyjhuang.qfit.ui.groups.ViewGroupFragment"
+        android:label="@string/title_view_group"
+        tools:layout="@layout/fragment_view_group">
+
+    </fragment>
 </navigation>

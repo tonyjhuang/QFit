@@ -8,7 +8,7 @@ import com.tonyjhuang.qfit.QLog
 import com.tonyjhuang.qfit.SingleLiveEvent
 import com.tonyjhuang.qfit.data.GroupRepository
 
-class GroupListViewModel(private val groupRepository: GroupRepository) : ViewModel() {
+class ViewGroupViewModel(private val groupRepository: GroupRepository) : ViewModel() {
 
     private val _text = MutableLiveData<String>().apply {
         value = "This is group list Fragment"
@@ -43,7 +43,7 @@ class GroupListViewModel(private val groupRepository: GroupRepository) : ViewMod
 }
 
 
-class GroupListViewModelFactory(private val groupRepository: GroupRepository) : ViewModelProvider.Factory {
+class ViewGroupViewModelFactory(private val groupRepository: GroupRepository) : ViewModelProvider.Factory {
     override fun <T : ViewModel?> create(modelClass: Class<T>): T {
         return modelClass.getConstructor(GroupRepository::class.java)
             .newInstance(groupRepository)
