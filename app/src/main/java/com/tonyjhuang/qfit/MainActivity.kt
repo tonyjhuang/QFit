@@ -20,6 +20,16 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         FirebaseApp.initializeApp(this)
         setContentView(R.layout.activity_main)
+
+        val user = FirebaseAuth.getInstance().currentUser
+        if (user == null) {
+            authenticateUser()
+        } else {
+            launchViews()
+        }
+    }
+
+    private fun launchViews() {
         val navView: BottomNavigationView = findViewById(R.id.nav_view)
 
         val navController = findNavController(R.id.nav_host_fragment)
@@ -32,7 +42,26 @@ class MainActivity : AppCompatActivity() {
         )
         setupActionBarWithNavController(navController, appBarConfiguration)
         navView.setupWithNavController(navController)
+    }
 
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+
+        if (requestCode == RC_SIGN_IN) {
+            val response = IdpResponse.fromResultIntent(data)
+
+            if (resultCode == Activity.RESULT_OK) {
+                launchViews()
+            } else {
+                // Sign in failed. If response is null the user canceled the
+                // sign-in flow using the back button. Otherwise check
+                // response.getError().getErrorCode() and handle the error.
+                authenticateUser()
+            }
+        }
+    }
+
+    private fun authenticateUser() {
         // Choose authentication providers
         val providers = arrayListOf(
             AuthUI.IdpConfig.GoogleBuilder().build()
@@ -46,25 +75,6 @@ class MainActivity : AppCompatActivity() {
                 .build(),
             RC_SIGN_IN
         )
-    }
-
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
-
-        if (requestCode == RC_SIGN_IN) {
-            val response = IdpResponse.fromResultIntent(data)
-
-            if (resultCode == Activity.RESULT_OK) {
-                // Successfully signed in
-                val user = FirebaseAuth.getInstance().currentUser
-                // ...
-            } else {
-                // Sign in failed. If response is null the user canceled the
-                // sign-in flow using the back button. Otherwise check
-                // response.getError().getErrorCode() and handle the error.
-                // ...
-            }
-        }
     }
 
     companion object {
