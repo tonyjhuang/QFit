@@ -1,0 +1,32 @@
+quarantine calisthenic group workouts
+
+a group has a list of weekly goals  
+  - the exercises are static but the measurements are customizable  (MVP: static, measurements)
+
+a weekly goal:
+  - consists of a measurement and an exercise
+  - restarts at the beginning of each week
+  - can increase linearly week over week (e.g. +10 pushups WoW) (MVP: unchanging measurements)
+  - translates automatically into a series of 7 daily goals
+
+starting set of goals:
+  - number of miles ran (MVP: 7)
+  - number of pushups (MVP: 70)
+  - number of squats (MVP: 140)
+  - number of burpees (MVP: 70)
+  - number of mountain climbers (MVP: 140)
+
+
+users can:
+  - join multiple groups
+  - see their list of daily goals
+  - record a 'rep' for a daily goal
+  - see the 'reps' for other users in groups the user is in
+  - create a group
+  - modify the goals of a group the user is in (MVP: no modification)
+
+a rep is:
+  - a single measurement of an exercise performed that maps to one of the user's daily/weekly goals
+  - summable and dictates whether the user has achieved the daily/weekly goal threshold
+  - is valid only for the current day
+  - immutable (no deleting or editing)
