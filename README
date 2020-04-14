@@ -30,3 +30,61 @@ a rep is:
   - summable and dictates whether the user has achieved the daily/weekly goal threshold
   - is valid only for the current day
   - immutable (no deleting or editing)
+
+
+
+FIREBASE DATA SCHEMA
+{
+  "users": {
+    "$user_id": {
+      "groups": {  # Group membership
+        "$group_id": true
+      },
+      "photo": ...  # Profile picture
+    }
+  },
+  "groups": {
+    "$group_id": {
+      "total_members": 10
+      "members": {  # Member list
+        "$user_id": true
+      },
+      "created_at": "$date",
+      "goals": {
+        "$goal_id": {
+          "amount": 40  # current daily goal
+
+        }
+      }
+    }
+  },
+  "group_progress": {
+    "$group_id": {
+      "$date": {
+        "$goal_id": {
+          "done_users": {
+            "$user_id": true
+          },
+          "in_progress_users": {
+            "$user_id": true
+          },
+          "inactive_users": {
+            "$user_id": true
+          }
+        }
+      }
+    }
+  },
+  "user_progress": {
+    "$user_id": {
+      "$date": {
+        "$goal_id": {
+          "amount": 50
+        }
+      }
+    }
+  },
+  "goals": {  # static list controlled by us
+    "$goal_id": true
+  }
+}
