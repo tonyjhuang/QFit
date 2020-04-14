@@ -1,5 +1,5 @@
 <resources>
     <string name="app_name">Q Fit</string>
     <string name="title_home">Home</string>
-    <string name="title_groups">Groups</string>
+    <string name="title_group_list">Groups</string>
 </resources>

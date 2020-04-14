@@ -4,10 +4,10 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ui.groups.GroupsFragment">
+    tools:context=".ui.groups.GroupListFragment">
 
     <TextView
-        android:id="@+id/text_dashboard"
+        android:id="@+id/text_title"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
@@ -15,8 +15,19 @@
         android:layout_marginEnd="8dp"
         android:textAlignment="center"
         android:textSize="20sp"
-        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        tools:text="Hello world" />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/list"
+        android:name="com.tonyjhuang.qfit.ui.groups.GroupListFragment"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layoutManager="LinearLayoutManager"
+        app:layout_constraintTop_toBottomOf="@+id/text_title"
+        tools:context=".ui.groups.GroupListFragment"
+        tools:listitem="@layout/group_item" />
 </androidx.constraintlayout.widget.ConstraintLayout>

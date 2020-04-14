@@ -7,7 +7,7 @@
         android:title="@string/title_home" />
 
     <item
-        android:id="@+id/navigation_groups"
+        android:id="@+id/navigation_group_list"
         android:icon="@drawable/ic_groups_black_24dp"
-        android:title="@string/title_groups" />
+        android:title="@string/title_group_list" />
 </menu>
