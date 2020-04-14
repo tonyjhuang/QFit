@@ -1,4 +1,4 @@
-package com.example.qfit
+package com.tonyjhuang.qfit
 
 import org.junit.Test
 

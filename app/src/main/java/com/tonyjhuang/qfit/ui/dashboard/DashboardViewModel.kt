@@ -1,4 +1,4 @@
-package com.example.qfit.ui.dashboard
+package com.tonyjhuang.qfit.ui.dashboard
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData

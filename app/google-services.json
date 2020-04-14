@@ -15,6 +15,51 @@
       },
       "oauth_client": [
         {
+          "client_id": "883585944576-bjlegarbm2739vusaicom3rc3ekmi2tm.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.tonyjhuang",
+            "certificate_hash": "7141483ef18514efab1ee146367f30523706bc9c"
+          }
+        },
+        {
+          "client_id": "883585944576-m2tq40qi4qqi8v6av7lpnsh07ch8a66p.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCU2ej2nztglIDQzuMZok6k61dbiPvR7mQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "883585944576-m2tq40qi4qqi8v6av7lpnsh07ch8a66p.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:883585944576:android:66e0daeb1510361dc71ce5",
+        "android_client_info": {
+          "package_name": "com.tonyjhuang.qfit"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "883585944576-4103idg2seq03n9u4gitq2vd9fsttngl.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.tonyjhuang.qfit",
+            "certificate_hash": "7141483ef18514efab1ee146367f30523706bc9c"
+          }
+        },
+        {
           "client_id": "883585944576-m2tq40qi4qqi8v6av7lpnsh07ch8a66p.apps.googleusercontent.com",
           "client_type": 3
         }
