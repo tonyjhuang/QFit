@@ -23,6 +23,6 @@
         android:layout_height="match_parent"
         app:defaultNavHost="true"
         android:layout_above="@+id/nav_view"
-        app:navGraph="@navigation/main" />
+        app:navGraph="@navigation/nav_main" />
 
 </RelativeLayout>

@@ -104,7 +104,7 @@ class ViewGroupFragment : Fragment() {
         super.onActivityResult(requestCode, resultCode, data)
         if (requestCode == RC_CREATE_GROUP) {
             if (resultCode == Activity.RESULT_OK) {
-                findNavController().navigate(R.id.action_FirstFragment_to_SecondFragment)
+                //findNavController().navigate(R.id.action_FirstFragment_to_SecondFragment)
             } else {
                 // TODO Handle error
             }

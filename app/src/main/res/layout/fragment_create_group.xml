@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="16dp"
+    tools:context=".ui.creategroup.CreateGroupFragment">
+
+    <EditText
+        android:id="@+id/group_name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:hint="Group name"
+        android:textAppearance="@android:style/TextAppearance.Large" />
+
+    <View
+        android:id="@+id/d0"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_below="@+id/group_name"
+        android:layout_marginTop="16dp"
+        android:layout_marginBottom="16dp"
+        android:background="@android:color/darker_gray" />
+
+    <EditText
+        android:id="@+id/miles_ran"
+        style="@style/GroupGoalInput"
+        android:layout_below="@+id/d0"
+        android:layout_alignParentStart="true" />
+
+    <TextView
+        style="@style/GroupGoalLabel"
+        android:layout_alignBottom="@+id/miles_ran"
+        android:layout_toEndOf="@+id/miles_ran"
+        android:text="miles ran" />
+
+    <EditText
+        android:id="@+id/pushups"
+        style="@style/GroupGoalInput"
+        android:layout_below="@+id/miles_ran"
+        android:layout_alignParentStart="true" />
+
+    <TextView
+        style="@style/GroupGoalLabel"
+        android:layout_alignBottom="@+id/pushups"
+        android:layout_toEndOf="@+id/pushups"
+        android:text="pushups" />
+
+    <EditText
+        android:id="@+id/squats"
+        style="@style/GroupGoalInput"
+        android:layout_below="@+id/pushups"
+        android:layout_alignParentStart="true" />
+
+    <TextView
+        style="@style/GroupGoalLabel"
+        android:layout_alignBottom="@+id/squats"
+        android:layout_toEndOf="@+id/squats"
+        android:text="squats" />
+
+    <EditText
+        android:id="@+id/sit_ups"
+        style="@style/GroupGoalInput"
+        android:layout_below="@+id/squats"
+        android:layout_alignParentStart="true" />
+
+    <TextView
+        style="@style/GroupGoalLabel"
+        android:layout_alignBottom="@+id/sit_ups"
+        android:layout_toEndOf="@+id/sit_ups"
+        android:text="sit ups" />
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/save"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentBottom="true"
+        android:layout_margin="16dp"
+        android:clickable="true"
+        android:src="@drawable/ic_check_black_24dp" />
+</RelativeLayout>
