@@ -40,7 +40,7 @@ FIREBASE DATA SCHEMA
       "groups": {  # Group membership
         "$group_id": true
       },
-      "photo": ...  # Profile picture
+      "photo_url": ...
     }
   },
   "groups": {
