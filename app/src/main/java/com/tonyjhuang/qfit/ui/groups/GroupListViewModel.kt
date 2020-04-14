@@ -3,6 +3,7 @@ package com.tonyjhuang.qfit.ui.groups
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import com.tonyjhuang.qfit.QLog
 
 class GroupListViewModel : ViewModel() {
 
@@ -18,4 +19,8 @@ class GroupListViewModel : ViewModel() {
         )
     }
     val groupList: LiveData<List<GroupItem>> = _groupList
+
+    fun addNewGroup(name: String) {
+        QLog.d("name: " + name)
+    }
 }

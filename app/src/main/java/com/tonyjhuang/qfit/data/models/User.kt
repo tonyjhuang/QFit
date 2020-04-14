@@ -4,7 +4,7 @@ import com.google.firebase.database.IgnoreExtraProperties
 
 @IgnoreExtraProperties
 data class User(
-    var name: String? = "",
-    var photo_url: String? = "",
-    var groups: MutableMap<String, Boolean>? = HashMap()
+    val name: String?,
+    val photo_url: String?,
+    val groups: MutableMap<String, Boolean>?
 )
