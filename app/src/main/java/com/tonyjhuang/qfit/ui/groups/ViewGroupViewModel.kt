@@ -26,8 +26,8 @@ class ViewGroupViewModel(private val groupRepository: GroupRepository) : ViewMod
     val events: LiveData<Event> = _events
 
     fun addNewGroup(name: String) {
-        groupRepository.getByName(name) {
-            if (it != null) {
+        groupRepository.getByName(name) { id, group ->
+            if (id != null) {
                 _events.value = Event.ViewGroupEvent(name)
                 return@getByName
             }

@@ -8,7 +8,7 @@
     <fragment
         android:id="@+id/navigation_create_group"
         android:name="com.tonyjhuang.qfit.ui.creategroup.CreateGroupFragment"
-        android:label="@string/first_fragment_label"
+        android:label="@string/title_create_group"
         tools:layout="@layout/fragment_create_group" >
         <argument
             android:name="name"

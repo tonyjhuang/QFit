@@ -11,7 +11,7 @@ class GroupRepository(
     private val db: DatabaseReference,
     private val userRepository: UserRepository
 ) {
-    fun getByName(name: String, callback: (Group?) -> Unit) {
+    fun getByName(name: String, callback: (String?, Group?) -> Unit) {
         db.child(PATH)
             .orderByChild("name")
             .equalTo(name)
@@ -32,17 +32,17 @@ class GroupRepository(
         callback(groupId, group)
     }
 
-    class GroupValueListener(private val callback: (Group?) -> Unit) : ValueEventListener {
+    class GroupValueListener(private val callback: (String?, Group?) -> Unit) : ValueEventListener {
         override fun onCancelled(p0: DatabaseError) {
-            callback(null)
+            callback(null, null)
         }
 
         override fun onDataChange(p0: DataSnapshot) {
             if (p0.exists()) {
-                callback(p0.getValue(Group::class.java))
+                callback(p0.key, p0.getValue(Group::class.java))
                 return
             }
-            callback(null)
+            callback(null, null)
         }
     }
 

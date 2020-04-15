@@ -13,6 +13,7 @@ import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.firebase.database.ktx.database
@@ -67,7 +68,7 @@ class GroupListFragment : Fragment() {
                     launchCreateGroupFlow(it.name)
                 }
                 is GroupListViewModel.Event.ViewGroupEvent -> {
-                    launchViewGroupFlow(it.name)
+                    launchViewGroupFlow(it.id)
                 }
             }
         })
@@ -93,8 +94,8 @@ class GroupListFragment : Fragment() {
             .show()
     }
 
-    private fun launchViewGroupFlow(groupName: String) {
-
+    private fun launchViewGroupFlow(groupId: String) {
+        findNavController().navigate(GroupListFragmentDirections.actionGroupListToViewGroup(groupId))
     }
 
     private fun launchCreateGroupFlow(newGroupName: String) {
@@ -106,11 +107,9 @@ class GroupListFragment : Fragment() {
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         if (requestCode == RC_CREATE_GROUP) {
-            QLog.d("result code: " + resultCode)
             val groupId = data?.getStringExtra(RES_GROUP_ID)
-            QLog.d("group id: " + groupId)
             if (resultCode == Activity.RESULT_OK && groupId != null) {
-                //findNavController().navigate(R.id.action_group_list_to_view_group, )
+                launchViewGroupFlow(groupId)
             } else {
                 // TODO Handle error
             }
