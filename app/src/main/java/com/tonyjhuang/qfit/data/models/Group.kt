@@ -9,4 +9,4 @@ data class Group(
     val goals: Map<String, GroupGoal>? = emptyMap())
 
 @IgnoreExtraProperties
-data class GroupGoal(val amount: Int)
+data class GroupGoal(val name: String, val amount: Int)

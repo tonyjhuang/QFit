@@ -4,7 +4,6 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
-import com.tonyjhuang.qfit.QLog
 import com.tonyjhuang.qfit.SingleLiveEvent
 import com.tonyjhuang.qfit.data.GroupRepository
 
@@ -27,10 +26,10 @@ class ViewGroupViewModel(private val groupRepository: GroupRepository) : ViewMod
     val events: LiveData<Event> = _events
 
     fun addNewGroup(name: String) {
-        groupRepository.exists(name) {
+        groupRepository.nameExists(name) {
             if (it) {
                 _events.value = Event.ViewGroupEvent(name)
-                return@exists
+                return@nameExists
             }
             _events.value = Event.CreateNewGroupEvent(name)
         }

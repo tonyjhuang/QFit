@@ -86,6 +86,8 @@ FIREBASE DATA SCHEMA
     }
   },
   "goals": {  # static list controlled by us
-    "$goal_id": true
+    "$goal_id": {
+      "name": "pushups"
+    }
   }
 }

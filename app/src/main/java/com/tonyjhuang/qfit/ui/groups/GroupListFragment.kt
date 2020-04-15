@@ -18,10 +18,12 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
+import com.tonyjhuang.qfit.QLog
 import com.tonyjhuang.qfit.R
 import com.tonyjhuang.qfit.data.GroupRepository
 import com.tonyjhuang.qfit.data.QfDb
 import com.tonyjhuang.qfit.ui.creategroup.CreateGroupActivity
+import com.tonyjhuang.qfit.ui.creategroup.CreateGroupActivity.Companion.RES_GROUP_ID
 
 class GroupListFragment : Fragment() {
 
@@ -103,8 +105,11 @@ class GroupListFragment : Fragment() {
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         if (requestCode == RC_CREATE_GROUP) {
-            if (resultCode == Activity.RESULT_OK) {
-                findNavController().navigate(R.id.action_group_list_to_view_group)
+            QLog.d("result code: " + resultCode)
+            val groupId = data?.getStringExtra(RES_GROUP_ID)
+            QLog.d("group id: " + groupId)
+            if (resultCode == Activity.RESULT_OK && groupId != null) {
+                //findNavController().navigate(R.id.action_group_list_to_view_group, )
             } else {
                 // TODO Handle error
             }

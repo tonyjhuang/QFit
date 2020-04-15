@@ -13,6 +13,7 @@ import com.google.firebase.FirebaseApp
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
+import com.tonyjhuang.qfit.data.CurrentUserRepository
 import com.tonyjhuang.qfit.data.QfDb
 import com.tonyjhuang.qfit.data.UserRepository
 
@@ -20,29 +21,24 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var database: QfDb
     private lateinit var userRepository: UserRepository
+    private lateinit var currentUserRepository: CurrentUserRepository
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         FirebaseApp.initializeApp(this)
         database = QfDb(Firebase.database.reference)
         userRepository = UserRepository(database)
+        currentUserRepository = CurrentUserRepository(userRepository)
         authenticateUser()
     }
 
     private fun authenticateUser() {
-        val user = FirebaseAuth.getInstance().currentUser
-        if (user == null) {
+        currentUserRepository.getOrCreateCurrentUser() { id, user ->
+            if (user != null) {
+                launchViews()
+                return@getOrCreateCurrentUser
+            }
             launchAuthenticationFlow()
-            return
-        }
-        userRepository.exists(user.uid) { exists ->
-            if (exists) {
-                launchViews()
-                return@exists
-            }
-            userRepository.create(user.uid, user.displayName!!, user.photoUrl!!.toString()) {
-                launchViews()
-            }
         }
     }
 
