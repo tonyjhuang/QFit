@@ -6,11 +6,13 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.tonyjhuang.qfit.SingleLiveEvent
 import com.tonyjhuang.qfit.data.CurrentUserRepository
+import com.tonyjhuang.qfit.data.GoalRepository
 import com.tonyjhuang.qfit.data.GroupRepository
 
 class CreateGroupViewModel(
     private val groupRepository: GroupRepository,
-    private val currentUserRepository: CurrentUserRepository
+    private val currentUserRepository: CurrentUserRepository,
+    private val goalRepository: GoalRepository
 ) : ViewModel() {
 
     private val _errorMessage = MutableLiveData<String>()
@@ -18,6 +20,13 @@ class CreateGroupViewModel(
 
     private val _events = SingleLiveEvent<Event>()
     val events: LiveData<Event> = _events
+
+    private val _goals = MutableLiveData<List<CreateGoal>>()
+    val goals: LiveData<List<CreateGoal>> = _goals
+
+    init {
+        goalRepository.getAll { _goals.value = it?.map { CreateGoal(it.key, it.value.name!!) } }
+    }
 
     fun createGroup(name: String) {
         groupRepository.getByName(name) { id, _ ->
@@ -43,15 +52,19 @@ class CreateGroupViewModel(
 }
 
 
+data class CreateGoal(val id: String, val name: String)
+
 class CreateGroupViewModelFactory(
     private val groupRepository: GroupRepository,
-    private val currentUserRepository: CurrentUserRepository
+    private val currentUserRepository: CurrentUserRepository,
+    private val goalRepository: GoalRepository
 ) :
     ViewModelProvider.Factory {
     override fun <T : ViewModel?> create(modelClass: Class<T>): T {
         return modelClass.getConstructor(
             GroupRepository::class.java,
-            CurrentUserRepository::class.java
-        ).newInstance(groupRepository, currentUserRepository)
+            CurrentUserRepository::class.java,
+            GoalRepository::class.java
+        ).newInstance(groupRepository, currentUserRepository, goalRepository)
     }
 }

@@ -3,6 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:padding="16dp"
     tools:context=".ui.creategroup.CreateGroupFragment">
 
@@ -23,53 +24,14 @@
         android:layout_marginBottom="16dp"
         android:background="@android:color/darker_gray" />
 
-    <EditText
-        android:id="@+id/miles_ran"
-        style="@style/GroupGoalInput"
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/goal_list"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
         android:layout_below="@+id/d0"
-        android:layout_alignParentStart="true" />
-
-    <TextView
-        style="@style/GroupGoalLabel"
-        android:layout_alignBottom="@+id/miles_ran"
-        android:layout_toEndOf="@+id/miles_ran"
-        android:text="miles ran" />
-
-    <EditText
-        android:id="@+id/pushups"
-        style="@style/GroupGoalInput"
-        android:layout_below="@+id/miles_ran"
-        android:layout_alignParentStart="true" />
-
-    <TextView
-        style="@style/GroupGoalLabel"
-        android:layout_alignBottom="@+id/pushups"
-        android:layout_toEndOf="@+id/pushups"
-        android:text="pushups" />
-
-    <EditText
-        android:id="@+id/squats"
-        style="@style/GroupGoalInput"
-        android:layout_below="@+id/pushups"
-        android:layout_alignParentStart="true" />
-
-    <TextView
-        style="@style/GroupGoalLabel"
-        android:layout_alignBottom="@+id/squats"
-        android:layout_toEndOf="@+id/squats"
-        android:text="squats" />
-
-    <EditText
-        android:id="@+id/sit_ups"
-        style="@style/GroupGoalInput"
-        android:layout_below="@+id/squats"
-        android:layout_alignParentStart="true" />
-
-    <TextView
-        style="@style/GroupGoalLabel"
-        android:layout_alignBottom="@+id/sit_ups"
-        android:layout_toEndOf="@+id/sit_ups"
-        android:text="sit ups" />
+        app:layoutManager="LinearLayoutManager"
+        tools:listitem="@layout/create_goal_item" />
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/save"
