@@ -1,9 +1,6 @@
 package com.tonyjhuang.qfit.data
 
-import com.google.firebase.database.DataSnapshot
-import com.google.firebase.database.DatabaseError
-import com.google.firebase.database.DatabaseReference
-import com.google.firebase.database.ValueEventListener
+import com.google.firebase.database.*
 import com.tonyjhuang.qfit.data.models.Group
 import com.tonyjhuang.qfit.data.models.GroupGoal
 
@@ -15,7 +12,22 @@ class GroupRepository(
         db.child(PATH)
             .orderByChild("name")
             .equalTo(name)
-            .addListenerForSingleValueEvent(GroupValueListener(callback))
+            .addListenerForSingleValueEvent(object : ValueEventListener {
+                override fun onCancelled(p0: DatabaseError) {
+                    callback(null, null)
+                }
+
+                override fun onDataChange(p0: DataSnapshot) {
+                    if (!p0.exists()) {
+                        callback(null, null)
+                        return
+                    }
+                    val value = p0.getValue(object :
+                        GenericTypeIndicator<Map<String, Group>>() {})!!
+                    val key: String = value.keys.first()
+                    callback(key, value[key])
+                }
+            })
     }
 
     fun getById(id: String, callback: (Group?) -> Unit) {
