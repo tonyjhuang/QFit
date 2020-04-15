@@ -15,6 +15,7 @@ import kotlinx.android.synthetic.main.fragment_create_group.*
 class CreateGroupFragment : Fragment() {
 
     private val viewModel: CreateGroupViewModel by activityViewModels()
+    private lateinit var adapter: GoalRecyclerViewAdapter
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -32,10 +33,12 @@ class CreateGroupFragment : Fragment() {
         goal_list.layoutManager = LinearLayoutManager(context)
 
         viewModel.goals.observe(viewLifecycleOwner, Observer {
-            goal_list.adapter = GoalRecyclerViewAdapter(it)
+            adapter = GoalRecyclerViewAdapter(it)
+            goal_list.adapter = adapter
         })
         save.setOnClickListener {
-            viewModel.createGroup(group_name.text.toString())
+            viewModel.createGroup(group_name.text.toString(), adapter.getInputForm())
+
         }
     }
 }

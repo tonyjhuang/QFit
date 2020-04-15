@@ -30,7 +30,8 @@ class GroupGoalPageFragment : Fragment() {
         goal_name.text = goalId
 
         viewModel.groupGoals.observe(viewLifecycleOwner, Observer {
-            goal_name.text = it[goalId]!!.name
+            val goal: GroupGoalState = it[goalId]!!
+            goal_name.text = "${goal.amount} ${goal.name}"
         })
     }
 

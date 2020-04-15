@@ -26,12 +26,7 @@ class ViewGroupViewModel(
     private val _totalMembers = MutableLiveData(0)
     val totalMembers: LiveData<Int> = _totalMembers
 
-    private val _groupGoals = MutableLiveData<Map<String, GroupGoalState>>().apply {
-        value = mapOf(
-            "a" to GroupGoalState("a", "Running"),
-            "b" to GroupGoalState("b", "Squats"),
-            "c" to GroupGoalState("c", "Pushups"))
-    }
+    private val _groupGoals = MutableLiveData<Map<String, GroupGoalState>>()
     val groupGoals: LiveData<Map<String, GroupGoalState>> = _groupGoals
 
     private val userListeners: MutableMap<String, ValueEventListener> = mutableMapOf()
@@ -69,6 +64,9 @@ class ViewGroupViewModel(
     private fun handleNewGroup(group: Group) {
         _groupName.value = group.name
         watchUsers(group.members?.keys?.toList() ?: emptyList())
+        _groupGoals.postValue(group.goals?.mapValues { (key, value) ->
+            GroupGoalState(key, value.name!!, value.amount)
+        })
     }
 
 
@@ -105,7 +103,7 @@ class ViewGroupViewModel(
 }
 
 
-data class GroupGoalState(val id: String, val name: String)
+data class GroupGoalState(val id: String, val name: String, val amount: Int)
 
 
 class ViewGroupViewModelFactory(

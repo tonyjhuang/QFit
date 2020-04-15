@@ -33,6 +33,10 @@ class GoalRecyclerViewAdapter(private val goals: List<CreateGoal>): RecyclerView
 
     override fun getItemCount(): Int = goals.size
 
+    fun getInputForm(): Map<String, String> {
+        return inputForm
+    }
+
     inner class ViewHolder(val view: View, val listener: TextListener) : RecyclerView.ViewHolder(view) {
         val label: TextView = view.label
         var amount: EditText = view.amount.apply { addTextChangedListener(listener) }
