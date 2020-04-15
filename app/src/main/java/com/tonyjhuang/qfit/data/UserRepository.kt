@@ -1,9 +1,6 @@
 package com.tonyjhuang.qfit.data
 
-import com.google.firebase.database.DataSnapshot
-import com.google.firebase.database.DatabaseError
-import com.google.firebase.database.DatabaseReference
-import com.google.firebase.database.ValueEventListener
+import com.google.firebase.database.*
 import com.tonyjhuang.qfit.data.models.User
 
 class UserRepository(private val db: DatabaseReference) {
@@ -30,6 +27,16 @@ class UserRepository(private val db: DatabaseReference) {
     fun removeGroupMembership(id: String, groupId: String) {
         db.child("$PATH/$id/groups/$groupId")
             .removeValue()
+    }
+
+    fun watchUserGroups(id: String, changeListener: ValueEventListener) {
+        db.child("$PATH/$id/groups")
+            .addValueEventListener(changeListener)
+    }
+
+    fun unwatchUserGroups(id: String, changeListener: ValueEventListener) {
+        db.child("$PATH/$id/groups")
+            .removeEventListener(changeListener)
     }
 
     class UserValueListener(private val callback: (User?) -> Unit) : ValueEventListener {

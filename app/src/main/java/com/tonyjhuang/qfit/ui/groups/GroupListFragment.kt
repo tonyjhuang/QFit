@@ -18,12 +18,13 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
-import com.tonyjhuang.qfit.QLog
 import com.tonyjhuang.qfit.R
+import com.tonyjhuang.qfit.data.CurrentUserRepository
 import com.tonyjhuang.qfit.data.GroupRepository
 import com.tonyjhuang.qfit.data.UserRepository
 import com.tonyjhuang.qfit.ui.creategroup.CreateGroupActivity
 import com.tonyjhuang.qfit.ui.creategroup.CreateGroupActivity.Companion.RES_GROUP_ID
+
 
 class GroupListFragment : Fragment() {
 
@@ -34,20 +35,21 @@ class GroupListFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         val userRepository = UserRepository(Firebase.database.reference)
+        val currentUserRepository = CurrentUserRepository(userRepository)
         val groupRepository = GroupRepository(Firebase.database.reference, userRepository)
         viewModel =
             ViewModelProviders.of(
                 this,
-                GroupListViewModelFactory(groupRepository)
+                GroupListViewModelFactory(currentUserRepository, userRepository, groupRepository)
             ).get(GroupListViewModel::class.java)
 
         val view = inflater.inflate(R.layout.fragment_group_list, container, false)
+        view.findViewById<View>(R.id.add_group).setOnClickListener {
+            getNewGroupName(viewModel::addNewGroup)
+        }
         with(view.findViewById<RecyclerView>(R.id.list)) {
             layoutManager = LinearLayoutManager(context)
             adapter = this@GroupListFragment.adapter
-        }
-        view.findViewById<View>(R.id.add_group).setOnClickListener {
-            getNewGroupName(viewModel::addNewGroup)
         }
 
         return view
@@ -84,7 +86,7 @@ class GroupListFragment : Fragment() {
         dialogBuilder
             .setView(view)
             .setCancelable(false)
-            .setPositiveButton("Proceed", DialogInterface.OnClickListener { _, _ ->
+            .setPositiveButton("Join", DialogInterface.OnClickListener { _, _ ->
                 callback(view?.findViewById<EditText>(R.id.group_name)?.text.toString())
             })
             .setNegativeButton("Cancel", DialogInterface.OnClickListener { dialog, _ ->
@@ -122,4 +124,4 @@ class GroupListFragment : Fragment() {
     }
 }
 
-data class GroupItem(val name: String, val totalMembers: Int)
+data class GroupItem(val id: String, val name: String, val totalMembers: Int)

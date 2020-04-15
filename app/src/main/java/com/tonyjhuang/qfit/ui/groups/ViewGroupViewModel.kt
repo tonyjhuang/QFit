@@ -9,31 +9,9 @@ import com.tonyjhuang.qfit.data.GroupRepository
 
 class ViewGroupViewModel(private val groupRepository: GroupRepository) : ViewModel() {
 
-    private val _text = MutableLiveData<String>().apply {
-        value = "This is group list Fragment"
-    }
-    val text: LiveData<String> = _text
-
-    private val _groupList = MutableLiveData<List<GroupItem>>().apply {
-        value = listOf(
-            GroupItem("jazzercise", 10),
-            GroupItem("runner's club", 25)
-        )
-    }
-    val groupList: LiveData<List<GroupItem>> = _groupList
 
     private val _events = SingleLiveEvent<Event>()
     val events: LiveData<Event> = _events
-
-    fun addNewGroup(name: String) {
-        groupRepository.getByName(name) { id, group ->
-            if (id != null) {
-                _events.value = Event.ViewGroupEvent(name)
-                return@getByName
-            }
-            _events.value = Event.CreateNewGroupEvent(name)
-        }
-    }
 
     sealed class Event {
         class CreateNewGroupEvent(val name: String) : Event()

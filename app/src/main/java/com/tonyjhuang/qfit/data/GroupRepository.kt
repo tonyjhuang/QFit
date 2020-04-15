@@ -18,6 +18,37 @@ class GroupRepository(
             .addListenerForSingleValueEvent(GroupValueListener(callback))
     }
 
+    fun getById(id: String, callback: (Group?) -> Unit) {
+        db.child(PATH)
+            .child(id)
+            .addListenerForSingleValueEvent(GroupValueListener { _, group ->
+                callback(group)
+            })
+    }
+
+    fun watchGroup(id: String, listener: ValueEventListener) {
+        db.child(PATH).child(id).addValueEventListener(listener)
+    }
+
+    fun unwatchGroup(id: String, listener: ValueEventListener) {
+        db.child(PATH).child(id).removeEventListener(listener)
+    }
+
+    fun getByIds(ids: List<String>, callback: (Map<String, Group?>) -> Void) {
+        val results = ids.associateWith { null as Group? }.toMutableMap()
+        var remaining = ids.size
+
+        for (id in ids) {
+            getById(id) {
+                results[id] = it
+                remaining--
+                if (remaining == 0) {
+                    callback(results)
+                }
+            }
+        }
+    }
+
     fun create(
         name: String,
         creatorId: String,
