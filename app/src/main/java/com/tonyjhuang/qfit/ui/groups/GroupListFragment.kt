@@ -62,7 +62,7 @@ class GroupListFragment : Fragment() {
             adapter.values = it
         })
         viewModel.events.observe(this, Observer {
-            when(it) {
+            when (it) {
                 is GroupListViewModel.Event.CreateNewGroupEvent -> {
                     launchCreateGroupFlow(it.name)
                 }

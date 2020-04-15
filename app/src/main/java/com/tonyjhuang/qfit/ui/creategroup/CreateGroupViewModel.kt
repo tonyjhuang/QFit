@@ -7,12 +7,10 @@ import androidx.lifecycle.ViewModelProvider
 import com.tonyjhuang.qfit.SingleLiveEvent
 import com.tonyjhuang.qfit.data.CurrentUserRepository
 import com.tonyjhuang.qfit.data.GroupRepository
-import com.tonyjhuang.qfit.data.UserRepository
 
 class CreateGroupViewModel(
-    private val currentUserRepository: CurrentUserRepository,
-    private val userRepository: UserRepository,
-    private val groupRepository: GroupRepository
+    private val groupRepository: GroupRepository,
+    private val currentUserRepository: CurrentUserRepository
 ) : ViewModel() {
 
     private val _errorMessage = MutableLiveData<String>()
@@ -32,11 +30,7 @@ class CreateGroupViewModel(
     }
 
     private fun createNewGroup(name: String) {
-        currentUserRepository.getCurrentUser { uid, user ->
-            if (uid == null || user == null) {
-                _errorMessage.value = "Couldn't get current user"
-                return@getCurrentUser
-            }
+        currentUserRepository.getCurrentUser { uid, _ ->
             groupRepository.create(name, uid, emptyMap()) { gid, _ ->
                 _events.value = Event.FinishEvent(gid)
             }
@@ -49,10 +43,15 @@ class CreateGroupViewModel(
 }
 
 
-class CreateGroupViewModelFactory(private val groupRepository: GroupRepository) :
+class CreateGroupViewModelFactory(
+    private val groupRepository: GroupRepository,
+    private val currentUserRepository: CurrentUserRepository
+) :
     ViewModelProvider.Factory {
     override fun <T : ViewModel?> create(modelClass: Class<T>): T {
-        return modelClass.getConstructor(GroupRepository::class.java)
-            .newInstance(groupRepository)
+        return modelClass.getConstructor(
+            GroupRepository::class.java,
+            CurrentUserRepository::class.java
+        ).newInstance(groupRepository, currentUserRepository)
     }
 }
