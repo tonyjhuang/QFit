@@ -13,14 +13,13 @@ import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
-import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
 import com.tonyjhuang.qfit.R
 import com.tonyjhuang.qfit.data.GroupRepository
-import com.tonyjhuang.qfit.data.QfDb
+import com.tonyjhuang.qfit.data.UserRepository
 import com.tonyjhuang.qfit.ui.creategroup.CreateGroupActivity
 
 class ViewGroupFragment : Fragment() {
@@ -31,10 +30,12 @@ class ViewGroupFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
+        val userRepository = UserRepository(Firebase.database.reference)
+        val groupRepository = GroupRepository(Firebase.database.reference, userRepository)
         viewModel =
             ViewModelProviders.of(
                 this,
-                ViewGroupViewModelFactory(GroupRepository(QfDb(Firebase.database.reference)))
+                ViewGroupViewModelFactory(groupRepository)
             ).get(ViewGroupViewModel::class.java)
 
         val view = inflater.inflate(R.layout.fragment_view_group, container, false)
@@ -81,7 +82,7 @@ class ViewGroupFragment : Fragment() {
             .setView(view)
             .setCancelable(false)
             .setPositiveButton("Proceed", DialogInterface.OnClickListener { _, _ ->
-                callback(view?.findViewById<EditText>(R.id.group_name)?.text.toString() ?: "")
+                callback(view?.findViewById<EditText>(R.id.group_name)?.text.toString() )
             })
             .setNegativeButton("Cancel", DialogInterface.OnClickListener { dialog, _ ->
                 dialog.cancel()

@@ -16,7 +16,7 @@ class CurrentUserRepository(private val userRepository: UserRepository) {
     fun getOrCreateCurrentUser(callback: (String?, User?) -> Unit) {
         val firebaseUser = FirebaseAuth.getInstance().currentUser
         firebaseUser ?: return callback(null, null)
-        getCurrentUser() { id, user ->
+        getCurrentUser { id, user ->
             if (user == null) {
                 createFromFirebaseUser(firebaseUser, callback)
                 return@getCurrentUser

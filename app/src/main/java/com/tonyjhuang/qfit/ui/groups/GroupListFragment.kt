@@ -13,7 +13,6 @@ import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
-import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.firebase.database.ktx.database
@@ -21,7 +20,7 @@ import com.google.firebase.ktx.Firebase
 import com.tonyjhuang.qfit.QLog
 import com.tonyjhuang.qfit.R
 import com.tonyjhuang.qfit.data.GroupRepository
-import com.tonyjhuang.qfit.data.QfDb
+import com.tonyjhuang.qfit.data.UserRepository
 import com.tonyjhuang.qfit.ui.creategroup.CreateGroupActivity
 import com.tonyjhuang.qfit.ui.creategroup.CreateGroupActivity.Companion.RES_GROUP_ID
 
@@ -33,10 +32,12 @@ class GroupListFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
+        val userRepository = UserRepository(Firebase.database.reference)
+        val groupRepository = GroupRepository(Firebase.database.reference, userRepository)
         viewModel =
             ViewModelProviders.of(
                 this,
-                GroupListViewModelFactory(GroupRepository(QfDb(Firebase.database.reference)))
+                GroupListViewModelFactory(groupRepository)
             ).get(GroupListViewModel::class.java)
 
         val view = inflater.inflate(R.layout.fragment_group_list, container, false)
@@ -77,13 +78,13 @@ class GroupListFragment : Fragment() {
     }
 
     private fun getNewGroupName(callback: (String) -> Unit) {
-        val dialogBuilder = AlertDialog.Builder(context!!)
+        val dialogBuilder = AlertDialog.Builder(requireContext())
         val view: View? = LayoutInflater.from(context)?.inflate(R.layout.dialog_add_new_group, null)
         dialogBuilder
             .setView(view)
             .setCancelable(false)
             .setPositiveButton("Proceed", DialogInterface.OnClickListener { _, _ ->
-                callback(view?.findViewById<EditText>(R.id.group_name)?.text.toString() ?: "")
+                callback(view?.findViewById<EditText>(R.id.group_name)?.text.toString())
             })
             .setNegativeButton("Cancel", DialogInterface.OnClickListener { dialog, _ ->
                 dialog.cancel()

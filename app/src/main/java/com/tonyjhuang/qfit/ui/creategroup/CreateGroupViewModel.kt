@@ -22,10 +22,10 @@ class CreateGroupViewModel(
     val events: LiveData<Event> = _events
 
     fun createGroup(name: String) {
-        groupRepository.nameExists(name) {
-            if (it) {
+        groupRepository.getByName(name) {
+            if (it != null) {
                 _errorMessage.value = "Group already exists"
-                return@nameExists
+                return@getByName
             }
             createNewGroup(name)
         }

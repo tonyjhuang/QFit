@@ -26,10 +26,10 @@ class GroupListViewModel(private val groupRepository: GroupRepository) : ViewMod
     val events: LiveData<Event> = _events
 
     fun addNewGroup(name: String) {
-        groupRepository.nameExists(name) {
-            if (it) {
+        groupRepository.getByName(name) {
+            if (it != null) {
                 _events.value = Event.ViewGroupEvent(name)
-                return@nameExists
+                return@getByName
             }
             _events.value = Event.CreateNewGroupEvent(name)
         }
@@ -42,7 +42,9 @@ class GroupListViewModel(private val groupRepository: GroupRepository) : ViewMod
 }
 
 
-class GroupListViewModelFactory(private val groupRepository: GroupRepository) : ViewModelProvider.Factory {
+class GroupListViewModelFactory(
+    private val groupRepository: GroupRepository
+) : ViewModelProvider.Factory {
     override fun <T : ViewModel?> create(modelClass: Class<T>): T {
         return modelClass.getConstructor(GroupRepository::class.java)
             .newInstance(groupRepository)

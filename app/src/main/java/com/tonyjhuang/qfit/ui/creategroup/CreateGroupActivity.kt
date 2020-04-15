@@ -6,13 +6,12 @@ import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
-import androidx.navigation.findNavController
 import androidx.navigation.fragment.NavHostFragment
 import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
 import com.tonyjhuang.qfit.R
 import com.tonyjhuang.qfit.data.GroupRepository
-import com.tonyjhuang.qfit.data.QfDb
+import com.tonyjhuang.qfit.data.UserRepository
 import kotlinx.android.synthetic.main.activity_create_group.*
 
 
@@ -24,10 +23,12 @@ class CreateGroupActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_create_group)
 
+        val userRepository = UserRepository(Firebase.database.reference)
+        val groupRepository = GroupRepository(Firebase.database.reference, userRepository)
         viewModel =
             ViewModelProviders.of(
                 this,
-                CreateGroupViewModelFactory(GroupRepository(QfDb(Firebase.database.reference)))
+                CreateGroupViewModelFactory(groupRepository)
             ).get(CreateGroupViewModel::class.java)
 
         val navHostFragment = nav_host_fragment as NavHostFragment
