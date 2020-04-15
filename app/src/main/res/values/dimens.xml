@@ -4,4 +4,8 @@
     <dimen name="activity_vertical_margin">16dp</dimen>
     <dimen name="text_margin">16dp</dimen>
     <dimen name="fab_margin">16dp</dimen>
+    <dimen name="pager_padding">16dp</dimen>
+    <dimen name="pageMarginAndOffset">50dp</dimen>
+    <dimen name="pageMargin">20dp</dimen>
+    <dimen name="pageOffset">30dp</dimen>
 </resources>

@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_marginTop="56dp"
+    android:layout_marginBottom="56dp"
+    android:layout_marginLeft="@dimen/pageMarginAndOffset"
+    android:layout_marginRight="@dimen/pageMarginAndOffset"
+    android:layout_height="match_parent">
+
+    <TextView
+        android:id="@+id/goal_name"
+        style="?android:textAppearanceMedium"
+        android:textColor="#222"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:lineSpacingMultiplier="1.2"
+        android:padding="16dp"
+        android:text="Running" />
+
+</RelativeLayout>
