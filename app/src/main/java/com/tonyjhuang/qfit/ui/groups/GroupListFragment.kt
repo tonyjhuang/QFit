@@ -30,6 +30,7 @@ class GroupListFragment : Fragment() {
 
     private lateinit var viewModel: GroupListViewModel
     private val adapter = GroupRecyclerViewAdapter(::onGroupItemClicked)
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -58,13 +59,13 @@ class GroupListFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        viewModel.text.observe(this, Observer {
+        viewModel.text.observe(viewLifecycleOwner, Observer {
             view.findViewById<TextView>(R.id.text_title).text = it
         })
-        viewModel.groupList.observe(this, Observer {
+        viewModel.groupList.observe(viewLifecycleOwner, Observer {
             adapter.values = it
         })
-        viewModel.events.observe(this, Observer {
+        viewModel.events.observe(viewLifecycleOwner, Observer {
             when (it) {
                 is GroupListViewModel.Event.CreateNewGroupEvent -> {
                     launchCreateGroupFlow(it.name)
@@ -77,7 +78,7 @@ class GroupListFragment : Fragment() {
     }
 
     private fun onGroupItemClicked(groupItem: GroupItem) {
-        launchViewGroupFlow(groupItem.name)
+        launchViewGroupFlow(groupItem.id)
     }
 
     private fun getNewGroupName(callback: (String) -> Unit) {

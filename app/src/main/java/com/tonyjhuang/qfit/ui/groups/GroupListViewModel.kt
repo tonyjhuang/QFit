@@ -21,7 +21,7 @@ class GroupListViewModel(
 ) : ViewModel() {
 
     private val _text = MutableLiveData<String>().apply {
-        value = "This is group list Fragment"
+        value = "Your Groups"
     }
     val text: LiveData<String> = _text
 
@@ -38,18 +38,6 @@ class GroupListViewModel(
                 p0.getValue(object :
                     GenericTypeIndicator<Map<String, Boolean>>() {})?.keys?.toList() ?: emptyList()
             watchGroups(groupIds)
-        }
-    }
-
-    fun watchGroups(groupIds: List<String>) {
-        for ((id, listener) in groupListeners) {
-            groupRepository.unwatchGroup(id, listener)
-        }
-        groupListeners.clear()
-        for (id in groupIds) {
-            val listener = SimpleGroupListener(id)
-            groupListeners[id] = listener
-            groupRepository.watchGroup(id, listener)
         }
     }
 
@@ -73,9 +61,16 @@ class GroupListViewModel(
         }
     }
 
-    override fun onCleared() {
-        userRepository.unwatchUserGroups(currentUserId, userGroupListListener)
-        super.onCleared()
+    fun watchGroups(groupIds: List<String>) {
+        for ((id, listener) in groupListeners) {
+            groupRepository.unwatchGroup(id, listener)
+        }
+        groupListeners.clear()
+        for (id in groupIds) {
+            val listener = SimpleGroupListener(id)
+            groupListeners[id] = listener
+            groupRepository.watchGroup(id, listener)
+        }
     }
 
     private fun notifyDataSetChanged() {
@@ -85,6 +80,15 @@ class GroupListViewModel(
         }
         _groupList.postValue(newGroupList)
     }
+
+    override fun onCleared() {
+        userRepository.unwatchUserGroups(currentUserId, userGroupListListener)
+        for ((groupId, groupListener) in groupListeners) {
+            groupRepository.unwatchGroup(groupId, groupListener)
+        }
+        super.onCleared()
+    }
+
 
     inner class SimpleGroupListener(private val id: String) : SimpleValueEventListener() {
         override fun onDataChange(p0: DataSnapshot) {

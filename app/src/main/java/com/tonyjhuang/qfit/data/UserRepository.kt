@@ -5,15 +5,13 @@ import com.tonyjhuang.qfit.data.models.User
 
 class UserRepository(private val db: DatabaseReference) {
     fun get(id: String, callback: (User?) -> Unit) {
-        db.child(PATH)
-            .child(id)
+        db.child("$PATH/$id")
             .addListenerForSingleValueEvent(UserValueListener(callback))
     }
 
     fun create(id: String, name: String, photoUrl: String, callback: (User?) -> Unit) {
         val user = User(name, photoUrl)
-        db.child(PATH)
-            .child(id)
+        db.child("$PATH/$id")
             .setValue(user)
             .addOnCompleteListener { callback(user) }
             .addOnFailureListener { callback(null) }
@@ -27,6 +25,16 @@ class UserRepository(private val db: DatabaseReference) {
     fun removeGroupMembership(id: String, groupId: String) {
         db.child("$PATH/$id/groups/$groupId")
             .removeValue()
+    }
+
+    fun watchUser(id: String, changeListener: ValueEventListener) {
+        db.child("$PATH/$id")
+            .addValueEventListener(changeListener)
+    }
+
+    fun unwatchUser(id: String, changeListener: ValueEventListener) {
+        db.child("$PATH/$id")
+            .removeEventListener(changeListener)
     }
 
     fun watchUserGroups(id: String, changeListener: ValueEventListener) {

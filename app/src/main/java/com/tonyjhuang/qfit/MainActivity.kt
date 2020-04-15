@@ -3,6 +3,9 @@ package com.tonyjhuang.qfit
 import android.content.Intent
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProviders
 import androidx.navigation.findNavController
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.setupActionBarWithNavController
@@ -14,6 +17,7 @@ import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
 import com.tonyjhuang.qfit.data.CurrentUserRepository
 import com.tonyjhuang.qfit.data.UserRepository
+import com.tonyjhuang.qfit.ui.groups.GroupListViewModel
 
 class MainActivity : AppCompatActivity() {
 
