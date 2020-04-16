@@ -1,20 +1,32 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_marginTop="56dp"
-    android:layout_marginBottom="56dp"
-    android:layout_marginLeft="@dimen/pageMarginAndOffset"
-    android:layout_marginRight="@dimen/pageMarginAndOffset"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:clickable="false"
+    android:paddingTop="24dp"
+    android:clipToPadding="false"
+    android:paddingBottom="16dp"
+    android:paddingLeft="72dp"
+    android:paddingRight="72dp">
 
-    <TextView
-        android:id="@+id/goal_name"
-        style="?android:textAppearanceMedium"
-        android:textColor="#222"
+    <RelativeLayout
+
+        android:clipToPadding="false"
+        android:outlineProvider="bounds"
+        android:elevation="4dp"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:lineSpacingMultiplier="1.2"
-        android:padding="16dp"
-        android:text="Running" />
+        android:layout_height="match_parent">
 
-</RelativeLayout>
+        <TextView
+            android:id="@+id/goal_name"
+            style="?android:textAppearanceMedium"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:lineSpacingMultiplier="1.2"
+            android:padding="16dp"
+            android:text="Running"
+            android:textColor="#222" />
+
+    </RelativeLayout>
+</FrameLayout>

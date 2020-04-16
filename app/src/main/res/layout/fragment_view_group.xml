@@ -3,7 +3,6 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:padding="8dp"
     tools:context=".ui.groups.GroupListFragment">
 
     <TextView
@@ -13,6 +12,7 @@
         android:layout_alignParentTop="true"
         android:layout_marginTop="8dp"
         android:layout_marginBottom="8dp"
+        android:padding="8dp"
         android:textAppearance="@android:style/TextAppearance.Large"
         android:textSize="20sp"
         tools:text="Hello world" />
@@ -23,18 +23,17 @@
         android:layout_height="wrap_content"
         android:layout_below="@+id/group_name"
         android:layout_alignParentEnd="true"
+        android:padding="8dp"
         android:textAppearance="@android:color/secondary_text_dark"
         android:textSize="14sp"
         tools:text="20 members" />
 
     <androidx.viewpager2.widget.ViewPager2
         android:id="@+id/pager"
-        android:padding="32dp"
-        android:clipToPadding="false"
-        android:clipChildren="false"
-        android:layout_marginTop="24dp"
-        android:layout_below="@+id/member_count"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        android:layout_height="match_parent"
+        android:layout_below="@+id/member_count"
+        android:clipChildren="false"
+        android:clipToPadding="false" />
 
 </RelativeLayout>
