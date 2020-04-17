@@ -1,10 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="300dp"
     android:layout_height="match_parent"
     android:layout_marginTop="56dp"
+    android:focusableInTouchMode="true"
+    android:focusable="true"
     android:layout_marginBottom="56dp"
     android:clickable="false"
     android:clipToPadding="false"
@@ -15,6 +17,8 @@
         android:layout_height="match_parent"
         android:clipToPadding="false"
         android:elevation="4dp"
+        android:focusableInTouchMode="true"
+        android:focusable="true"
         android:gravity="bottom"
         android:orientation="vertical"
         android:outlineProvider="bounds"
@@ -79,4 +83,4 @@
         </FrameLayout>
 
     </LinearLayout>
-</FrameLayout>
+</RelativeLayout>

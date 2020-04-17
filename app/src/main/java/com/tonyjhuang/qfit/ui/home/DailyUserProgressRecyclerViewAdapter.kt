@@ -1,11 +1,11 @@
 package com.tonyjhuang.qfit.ui.home
 
 import android.content.Context
+import android.graphics.Typeface
 import android.os.Handler
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -40,20 +40,23 @@ class DailyUserProgressRecyclerViewAdapter(
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val item = dailyUserProgress[position]
         holder.currentProgress.text = "${item.userProgress} ${item.goalName}"
+        holder.progressUpdateAmount.setText("0", TextView.BufferType.EDITABLE)
 
         if (position == activeProgressEditPosition) {
             holder.progressUpdateContainer.visibility = View.VISIBLE
-            holder.initiateProgressUpdateButton.visibility = View.GONE
+            holder.initiateProgressUpdateButton.visibility = View.INVISIBLE
         } else {
-            holder.progressUpdateAmount.setText("0", TextView.BufferType.EDITABLE)
-            holder.progressUpdateContainer.visibility = View.GONE
+            holder.progressUpdateContainer.visibility = View.INVISIBLE
             holder.initiateProgressUpdateButton.visibility = View.VISIBLE
         }
 
         holder.targetRecyclerView.apply {
             layoutManager =
-                LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
-            val viewAdapter = GroupTargetRecyclerViewAdapter(context, item.groupTargets, item.userProgress)
+                LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false).apply {
+                    stackFromEnd = true
+                }
+            val viewAdapter =
+                GroupTargetRecyclerViewAdapter(context, item.groupTargets, item.userProgress)
             adapter = viewAdapter
 
             setRecycledViewPool(viewPool)
@@ -63,7 +66,9 @@ class DailyUserProgressRecyclerViewAdapter(
     fun onSaveProgressButtonClicked(position: Int, updateAmount: Int) {
         activeProgressEditPosition = -1
         listener(dailyUserProgress[position].goalId, updateAmount)
-        Handler().post { notifyItemChanged(position) }
+        Handler().post {
+             notifyItemChanged(position)
+        }
     }
 
     fun onInitiateProgressUpdateButtonClicked(position: Int) {
@@ -85,6 +90,7 @@ class DailyUserProgressRecyclerViewAdapter(
         val initiateProgressUpdateButton = view.initiate_progress_update.apply {
             setOnClickListener {
                 progressUpdateAmount.setText("0", TextView.BufferType.EDITABLE)
+                progressUpdateAmount.requestFocus()
                 onInitiateProgressUpdateButtonClicked(absoluteAdapterPosition)
             }
         }
@@ -123,12 +129,23 @@ class GroupTargetRecyclerViewAdapter(
         val groupTarget = targets[position]
         holder.label.text = "${groupTarget.goalAmount} ${groupTarget.groupName}"
         val achieved = groupTarget.goalAmount <= progressAmount
-        val textColor = if (achieved) {
-            ContextCompat.getColor(context, R.color.textColorGoalAchieved)
+        if (achieved) {
+            holder.label.setTextColor(
+                ContextCompat.getColor(
+                    context,
+                    R.color.textColorGoalAchieved
+                )
+            )
+            holder.label.setTypeface(null, Typeface.BOLD);
         } else {
-            ContextCompat.getColor(context, R.color.textColorGoalUnachieved)
+            holder.label.setTextColor(
+                ContextCompat.getColor(
+                    context,
+                    R.color.textColorGoalUnachieved
+                )
+            )
+            holder.label.setTypeface(null, Typeface.NORMAL);
         }
-        holder.label.setTextColor(textColor)
     }
 
     inner class ViewHolder(val view: View) : RecyclerView.ViewHolder(view) {
