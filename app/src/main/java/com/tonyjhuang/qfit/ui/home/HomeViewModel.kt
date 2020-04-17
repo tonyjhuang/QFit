@@ -92,13 +92,26 @@ class HomeViewModel(
             val goalName = userGoals[goalId]!!.name!!
             val progress = userProgress[goalId]?.amount ?: 0
             val targets = mutableListOf<GroupTarget>()
+            var totalGroups = 0
+            var finishedGroups = 0
             for ((groupId, group) in userGroups) {
                 val groupGoals = group.goals ?: continue
                 if (groupGoals.keys.contains(goalId)) {
-                    targets.add(GroupTarget(groupId, group.name!!, groupGoals[goalId]!!.amount))
+                    val groupGoalAmount = groupGoals[goalId]!!.amount
+                    totalGroups += 1
+                    finishedGroups += if (progress >= groupGoalAmount) 1 else 0
+                    targets.add(GroupTarget(groupId, group.name!!, groupGoalAmount))
                 }
             }
-            res.add(DailyUserProgress(goalId, goalName, progress, targets))
+            res.add(
+                DailyUserProgress(
+                    goalId,
+                    goalName,
+                    progress,
+                    targets,
+                    totalGroups == finishedGroups
+                )
+            )
         }
         _dailyUserProgress.postValue(res)
     }
@@ -106,7 +119,7 @@ class HomeViewModel(
     fun updateUserProgress(goalId: String, userProgressDelta: Int) {
         if (userProgressDelta == 0) return
         val currentProgressAmount = userProgress[goalId]?.amount ?: 0
-        val newProgressAmount = currentProgressAmount+ userProgressDelta
+        val newProgressAmount = currentProgressAmount + userProgressDelta
         if (didAchieveNewGoal(goalId, currentProgressAmount, newProgressAmount)) {
             _events.postValue(Event.AchievedNewGoalEvent())
         }
@@ -146,7 +159,8 @@ data class DailyUserProgress(
     val goalId: String,
     val goalName: String,
     val userProgress: Int,
-    val groupTargets: List<GroupTarget>
+    val groupTargets: List<GroupTarget>,
+    val finished: Boolean = true
 )
 
 

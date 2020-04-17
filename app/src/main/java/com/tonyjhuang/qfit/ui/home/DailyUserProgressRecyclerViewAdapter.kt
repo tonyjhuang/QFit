@@ -2,7 +2,6 @@ package com.tonyjhuang.qfit.ui.home
 
 import android.content.Context
 import android.graphics.Typeface
-import android.os.Handler
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -11,6 +10,7 @@ import android.widget.TextView
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.facebook.shimmer.ShimmerFrameLayout
 import com.tonyjhuang.qfit.R
 import kotlinx.android.synthetic.main.list_item_daily_user_progress.view.*
 import kotlinx.android.synthetic.main.list_item_group_target.view.*
@@ -49,6 +49,12 @@ class DailyUserProgressRecyclerViewAdapter(
 
             setRecycledViewPool(viewPool)
         }
+
+        if (item.finished) {
+            holder.container.setBackgroundColor(holder.container.context.getColor(R.color.finishedColorBase))
+        } else {
+            holder.container.setBackgroundColor(holder.container.context.getColor(android.R.color.background_light))
+        }
     }
 
     override fun getItemCount(): Int {
@@ -56,6 +62,7 @@ class DailyUserProgressRecyclerViewAdapter(
     }
 
     inner class ViewHolder(val view: View) : RecyclerView.ViewHolder(view) {
+        val container: View = view.container
         val targetRecyclerView: RecyclerView = view.group_target_container
         val currentProgress: TextView = view.current_progress
         val initiateProgressUpdateButton: Button = view.initiate_progress_update.apply {
