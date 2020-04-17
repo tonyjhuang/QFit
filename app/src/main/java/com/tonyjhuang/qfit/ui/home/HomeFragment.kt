@@ -1,27 +1,33 @@
 package com.tonyjhuang.qfit.ui.home
 
-import android.content.Context
+import android.content.DialogInterface
+import android.graphics.Color
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.view.inputmethod.InputMethodManager
+import android.widget.EditText
+import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
-import com.tonyjhuang.qfit.QLog
 import com.tonyjhuang.qfit.R
 import com.tonyjhuang.qfit.data.*
 import kotlinx.android.synthetic.main.fragment_home.*
+import kotlinx.android.synthetic.main.fragment_home.view.*
+import nl.dionsegijn.konfetti.KonfettiView
+import nl.dionsegijn.konfetti.models.Shape
+import nl.dionsegijn.konfetti.models.Size
 
 
 class HomeFragment : Fragment() {
 
     private lateinit var homeViewModel: HomeViewModel
     private lateinit var adapter: DailyUserProgressRecyclerViewAdapter
+    private lateinit var konfetti: KonfettiView
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -49,17 +55,17 @@ class HomeFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        konfetti = view.konfetti
+
         homeViewModel.header.observe(viewLifecycleOwner, Observer {
             header.text = it
         })
-        adapter = DailyUserProgressRecyclerViewAdapter(requireContext()) { goalId, updateAmount ->
-            QLog.d("hello? $goalId $updateAmount")
-            homeViewModel.updateUserProgress(goalId, updateAmount)
-            // Hide keyboard
-            view.let { v ->
-                val imm =
-                    context?.getSystemService(Context.INPUT_METHOD_SERVICE) as? InputMethodManager
-                imm?.hideSoftInputFromWindow(v.windowToken, 0)
+        adapter = DailyUserProgressRecyclerViewAdapter { goalId ->
+            getNewUserProgress {
+                val newProgress = it.toIntOrNull() ?: 0
+                if (newProgress != 0) {
+                    homeViewModel.updateUserProgress(goalId, newProgress)
+                }
             }
         }
 
@@ -72,6 +78,42 @@ class HomeFragment : Fragment() {
             adapter.dailyUserProgress = it
             adapter.notifyDataSetChanged()
         })
+        homeViewModel.events.observe(viewLifecycleOwner, Observer {
+            when (it) {
+                is HomeViewModel.Event.AchievedNewGoalEvent -> {
+                    showConfetti()
+                }
+            }
+        })
+    }
 
+    private fun showConfetti() {
+        konfetti.build()
+            .addColors(Color.YELLOW, Color.GREEN, Color.MAGENTA)
+            .setDirection(0.0, 359.0)
+            .setSpeed(1f, 5f)
+            .setFadeOutEnabled(true)
+            .setTimeToLive(2000L)
+            .addShapes(Shape.Square, Shape.Circle)
+            .addSizes(Size(12))
+            .setPosition(-50f, konfetti.width + 50f, -50f, -50f)
+            .streamFor(300, 5000L)
+    }
+
+    private fun getNewUserProgress(callback: (String) -> Unit) {
+        val dialogBuilder = AlertDialog.Builder(requireContext())
+        val view: View? =
+            LayoutInflater.from(context)?.inflate(R.layout.dialog_get_new_progress, null)
+        dialogBuilder
+            .setView(view)
+            .setCancelable(false)
+            .setPositiveButton("Record", DialogInterface.OnClickListener { _, _ ->
+                callback(view?.findViewById<EditText>(R.id.progress_amount)?.text.toString())
+            })
+            .setNegativeButton("Cancel", DialogInterface.OnClickListener { dialog, _ ->
+                dialog.cancel()
+            })
+            .create()
+            .show()
     }
 }

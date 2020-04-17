@@ -7,6 +7,7 @@ import androidx.lifecycle.ViewModelProvider
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.GenericTypeIndicator
 import com.tonyjhuang.qfit.SimpleValueEventListener
+import com.tonyjhuang.qfit.SingleLiveEvent
 import com.tonyjhuang.qfit.data.*
 import com.tonyjhuang.qfit.data.models.Goal
 import com.tonyjhuang.qfit.data.models.Group
@@ -47,6 +48,8 @@ class HomeViewModel(
     private val _dailyUserProgress = MutableLiveData<List<DailyUserProgress>>()
     val dailyUserProgress: LiveData<List<DailyUserProgress>> = _dailyUserProgress
 
+    private val _events = SingleLiveEvent<Event>()
+    val events: LiveData<Event> = _events
 
     init {
         val df = SimpleDateFormat("MMMM dd", Locale.US)
@@ -100,19 +103,42 @@ class HomeViewModel(
         _dailyUserProgress.postValue(res)
     }
 
-    fun updateUserProgress(goalId: String, newUserProgressAmount: Int) {
+    fun updateUserProgress(goalId: String, userProgressDelta: Int) {
+        if (userProgressDelta == 0) return
+        val currentProgressAmount = userProgress[goalId]?.amount ?: 0
+        val newProgressAmount = currentProgressAmount+ userProgressDelta
+        if (didAchieveNewGoal(goalId, currentProgressAmount, newProgressAmount)) {
+            _events.postValue(Event.AchievedNewGoalEvent())
+        }
+
         progressRepository.addProgress(
             currentUserId,
             goalId,
             today,
-            (userProgress[goalId]?.amount ?: 0) + newUserProgressAmount
+            newProgressAmount
         )
 
+    }
+
+    fun didAchieveNewGoal(goalId: String, oldProgressAmount: Int, newProgressAmount: Int): Boolean {
+        var achievedGoals = 0
+        var newlyAchievedGoals = 0
+        for (group in userGroups.values) {
+            val groupGoalAmount = group.goals?.get(goalId)?.amount ?: continue
+            achievedGoals += if (oldProgressAmount >= groupGoalAmount) 1 else 0
+            newlyAchievedGoals += if (newProgressAmount >= groupGoalAmount) 1 else 0
+        }
+        return achievedGoals < newlyAchievedGoals
     }
 
     override fun onCleared() {
         progressRepository.unwatchDailyProgress(currentUserId, today, userProgressListener)
         super.onCleared()
+    }
+
+
+    sealed class Event {
+        class AchievedNewGoalEvent : Event()
     }
 }
 

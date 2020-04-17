@@ -26,4 +26,9 @@
         android:orientation="horizontal"
         app:layoutManager="LinearLayoutManager"
         tools:listitem="@layout/list_item_daily_user_progress" />
+
+    <nl.dionsegijn.konfetti.KonfettiView
+        android:id="@+id/konfetti"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
 </RelativeLayout>

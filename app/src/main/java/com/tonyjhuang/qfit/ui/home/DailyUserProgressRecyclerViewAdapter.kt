@@ -6,6 +6,7 @@ import android.os.Handler
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Button
 import android.widget.TextView
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -16,10 +17,8 @@ import kotlinx.android.synthetic.main.list_item_group_target.view.*
 
 
 class DailyUserProgressRecyclerViewAdapter(
-    private val context: Context,
-    private val listener: (goalId: String, updateAmount: Int) -> Unit
-) :
-    RecyclerView.Adapter<DailyUserProgressRecyclerViewAdapter.ViewHolder>() {
+    private val logExerciseListener: (String) -> Unit
+) : RecyclerView.Adapter<DailyUserProgressRecyclerViewAdapter.ViewHolder>() {
 
     private val viewPool = RecyclerView.RecycledViewPool()
 
@@ -28,8 +27,6 @@ class DailyUserProgressRecyclerViewAdapter(
             field = value
             notifyDataSetChanged()
         }
-
-    var activeProgressEditPosition = -1
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val view = LayoutInflater.from(parent.context)
@@ -40,15 +37,6 @@ class DailyUserProgressRecyclerViewAdapter(
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val item = dailyUserProgress[position]
         holder.currentProgress.text = "${item.userProgress} ${item.goalName}"
-        holder.progressUpdateAmount.setText("0", TextView.BufferType.EDITABLE)
-
-        if (position == activeProgressEditPosition) {
-            holder.progressUpdateContainer.visibility = View.VISIBLE
-            holder.initiateProgressUpdateButton.visibility = View.INVISIBLE
-        } else {
-            holder.progressUpdateContainer.visibility = View.INVISIBLE
-            holder.initiateProgressUpdateButton.visibility = View.VISIBLE
-        }
 
         holder.targetRecyclerView.apply {
             layoutManager =
@@ -63,45 +51,16 @@ class DailyUserProgressRecyclerViewAdapter(
         }
     }
 
-    fun onSaveProgressButtonClicked(position: Int, updateAmount: Int) {
-        activeProgressEditPosition = -1
-        listener(dailyUserProgress[position].goalId, updateAmount)
-        Handler().post {
-             notifyItemChanged(position)
-        }
-    }
-
-    fun onInitiateProgressUpdateButtonClicked(position: Int) {
-        val oldPosition = activeProgressEditPosition
-        activeProgressEditPosition = position
-        Handler().post {
-            notifyItemChanged(oldPosition)
-            notifyItemChanged(activeProgressEditPosition)
-        }
-    }
-
     override fun getItemCount(): Int {
         return dailyUserProgress.size
     }
 
     inner class ViewHolder(val view: View) : RecyclerView.ViewHolder(view) {
         val targetRecyclerView: RecyclerView = view.group_target_container
-        val currentProgress = view.current_progress
-        val initiateProgressUpdateButton = view.initiate_progress_update.apply {
+        val currentProgress: TextView = view.current_progress
+        val initiateProgressUpdateButton: Button = view.initiate_progress_update.apply {
             setOnClickListener {
-                progressUpdateAmount.setText("0", TextView.BufferType.EDITABLE)
-                progressUpdateAmount.requestFocus()
-                onInitiateProgressUpdateButtonClicked(absoluteAdapterPosition)
-            }
-        }
-        val progressUpdateContainer = view.progress_update_container
-        val progressUpdateAmount = view.progress_update_amount
-        val saveProgressButton = view.save_progress_update.apply {
-            setOnClickListener {
-                onSaveProgressButtonClicked(
-                    absoluteAdapterPosition,
-                    progressUpdateAmount.text.toString().toIntOrNull() ?: 0
-                )
+                logExerciseListener(dailyUserProgress[absoluteAdapterPosition].goalId)
             }
         }
     }
@@ -149,7 +108,7 @@ class GroupTargetRecyclerViewAdapter(
     }
 
     inner class ViewHolder(val view: View) : RecyclerView.ViewHolder(view) {
-        val label = view.group_target_label
+        val label: TextView = view.group_target_label
     }
 }
 
