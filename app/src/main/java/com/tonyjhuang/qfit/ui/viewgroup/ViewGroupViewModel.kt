@@ -5,11 +5,10 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.GenericTypeIndicator
 import com.tonyjhuang.qfit.SimpleValueEventListener
-import com.tonyjhuang.qfit.data.GoalRepository
-import com.tonyjhuang.qfit.data.GroupRepository
-import com.tonyjhuang.qfit.data.ProgressRepository
-import com.tonyjhuang.qfit.data.UserRepository
+import com.tonyjhuang.qfit.SingleLiveEvent
+import com.tonyjhuang.qfit.data.*
 import com.tonyjhuang.qfit.data.models.Goal
 import com.tonyjhuang.qfit.data.models.Group
 import com.tonyjhuang.qfit.data.models.User
@@ -20,7 +19,8 @@ class ViewGroupViewModel(
     private val groupRepository: GroupRepository,
     private val userRepository: UserRepository,
     private val goalRepository: GoalRepository,
-    private val progressRepository: ProgressRepository
+    private val progressRepository: ProgressRepository,
+    private val currentUserRepository: CurrentUserRepository
 ) : ViewModel() {
 
     private val _groupName = MutableLiveData<String>()
@@ -50,11 +50,18 @@ class ViewGroupViewModel(
         }
     }
 
-    fun groupRequested(id: String) {
-        groupId = id
-        groupRepository.watchGroup(id, groupListener)
-    }
+    private lateinit var currentUserId: String
 
+    private val _events = SingleLiveEvent<Event>()
+    val events: LiveData<Event> = _events
+
+    fun groupRequested(groupId: String) {
+        this.groupId = groupId
+        currentUserRepository.getCurrentUser { currentUserId, _ ->
+            this.currentUserId = currentUserId
+            groupRepository.watchGroup(groupId, groupListener)
+        }
+    }
 
     private fun handleNewGroup(group: Group) {
         groupData = group
@@ -89,10 +96,12 @@ class ViewGroupViewModel(
                 generateAndEmitGroupGoalProgressView(emptyMap())
                 return
             }
+            generateAndEmitGroupGoalProgressView(p0.getValue(object :
+                GenericTypeIndicator<Map<String, Map<String, UserProgress>>>() {})!!)
         }
     }
 
-    fun generateAndEmitGroupGoalProgressView(serverGroupProgress: Map<String, Map<String, UserProgress>>) {
+    private fun generateAndEmitGroupGoalProgressView(serverGroupProgress: Map<String, Map<String, UserProgress>>) {
         val res = mutableMapOf<String, GroupGoalProgressView>()
         for ((goalId, goal) in groupGoalData) {
             val groupGoal = groupData.goals?.get(goalId) ?: continue
@@ -101,26 +110,67 @@ class ViewGroupViewModel(
                     goalId,
                     goal.name!!,
                     groupGoal.amount,
-                    generateCurrentUserProgress(serverGroupProgress[goalId])
+                    generateCurrentUserProgress(goalId, serverGroupProgress[goalId])
                 )
         }
         _groupGoalProgress.postValue(res)
     }
 
     private fun generateCurrentUserProgress(
+        goalId: String,
         serverUserProgress: Map<String, UserProgress>?
     ): List<CurrentUserProgress> {
         val res = mutableListOf<CurrentUserProgress>()
+        val groupGoalTarget = groupData.goals?.get(goalId)?.amount ?: 0
         for ((userId, user) in userData) {
+            val userProgressAmount = serverUserProgress?.get(userId)?.amount ?: 0
             res.add(
                 CurrentUserProgress(
                     userId,
+                    user.name!!,
                     user.photo_url!!,
-                    serverUserProgress?.get(userId)?.amount ?: 0
+                    userProgressAmount,
+                    currentUserId == userId,
+                    userProgressAmount >= groupGoalTarget,
+                    userProgressAmount > 0
                 )
             )
         }
         return res.sortedByDescending { it.userProgressAmount }
+    }
+
+    fun updateUserProgress(goalId: String, userProgressDelta: Int) {
+        if (userProgressDelta == 0) return
+        val currentUserProgressAmount =
+            _groupGoalProgress.value?.get(goalId)?.userProgress?.first {
+                it.userId == currentUserId
+            }?.userProgressAmount ?: return
+
+        val newProgressAmount = currentUserProgressAmount + userProgressDelta
+        if (didAchieveNewGoal(goalId, currentUserProgressAmount, newProgressAmount)) {
+            _events.postValue(Event.AchievedNewGoalEvent())
+        }
+
+        progressRepository.addUserProgress(
+            currentUserId,
+            goalId,
+            today,
+            newProgressAmount
+        )
+    }
+
+    private fun didAchieveNewGoal(
+        goalId: String,
+        oldProgressAmount: Int,
+        newProgressAmount: Int
+    ): Boolean {
+        val groupGoalAmount = groupData.goals?.get(goalId)?.amount ?: return false
+        return groupGoalAmount in (oldProgressAmount + 1)..newProgressAmount
+    }
+
+
+    sealed class Event {
+        class AchievedNewGoalEvent : Event()
     }
 }
 
@@ -133,8 +183,12 @@ data class GroupGoalProgressView(
 
 data class CurrentUserProgress(
     val userId: String,
+    val userName: String,
     val userPhotoUrl: String,
-    val userProgressAmount: Int
+    val userProgressAmount: Int,
+    val isCurrentUser: Boolean,
+    val finished: Boolean,
+    val inProgress: Boolean
 )
 
 
@@ -142,7 +196,8 @@ class ViewGroupViewModelFactory(
     private val groupRepository: GroupRepository,
     private val userRepository: UserRepository,
     private val goalRepository: GoalRepository,
-    private val progressRepository: ProgressRepository
+    private val progressRepository: ProgressRepository,
+    private val currentUserRepository: CurrentUserRepository
 ) :
     ViewModelProvider.Factory {
     override fun <T : ViewModel?> create(modelClass: Class<T>): T {
@@ -150,7 +205,14 @@ class ViewGroupViewModelFactory(
             GroupRepository::class.java,
             UserRepository::class.java,
             GoalRepository::class.java,
-            ProgressRepository::class.java
-        ).newInstance(groupRepository, userRepository, goalRepository, progressRepository)
+            ProgressRepository::class.java,
+            CurrentUserRepository::class.java
+        ).newInstance(
+            groupRepository,
+            userRepository,
+            goalRepository,
+            progressRepository,
+            currentUserRepository
+        )
     }
 }

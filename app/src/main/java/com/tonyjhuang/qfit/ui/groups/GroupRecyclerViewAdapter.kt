@@ -17,12 +17,10 @@ class GroupRecyclerViewAdapter(
 
     private val mOnClickListener: View.OnClickListener
 
-    private var _values: List<GroupItem> = emptyList()
-    var values: List<GroupItem>
-        get() = _values
+    var values: List<GroupItem> = emptyList()
         set(value) {
-            val oldValues = _values
-            _values = value
+            val oldValues = field
+            field = value
             val diffResult =
                 DiffUtil.calculateDiff(MyDiffCallback(oldValues, value))
             diffResult.dispatchUpdatesTo(this)

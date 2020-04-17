@@ -19,11 +19,11 @@
         android:padding="4dp">
 
         <View
-            android:background="@color/finishedColorBase"
             android:layout_width="match_parent"
-            android:layout_marginBottom="-36dp"
             android:layout_height="match_parent"
-            android:layout_above="@+id/top_divider" />
+            android:layout_above="@+id/top_divider"
+            android:layout_marginBottom="-36dp"
+            android:background="@color/finishedColorBase" />
 
         <TextView
             android:id="@+id/goal_name"
@@ -44,15 +44,27 @@
             android:layout_marginTop="36dp"
             android:background="#DDD" />
 
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/user_progress_recyclerview"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:paddingLeft="8dp"
+            android:paddingRight="8dp"
+            android:paddingTop="8dp"
+            android:layout_above="@+id/bottom_divider"
+            android:layout_below="@+id/top_divider" />
+
         <ImageView
-            android:layout_below="@+id/goal_name"
             android:id="@+id/leaderboard"
-            android:background="@drawable/circle"
             android:layout_width="72dp"
             android:layout_height="72dp"
-            android:elevation="3dp"
-            android:clipToPadding="false"
+            android:layout_below="@+id/goal_name"
             android:layout_centerHorizontal="true"
+            android:background="@drawable/circle"
+            android:clickable="false"
+            android:clipToPadding="false"
+            android:elevation="3dp"
             android:src="@drawable/ic_leaderboard" />
 
         <View

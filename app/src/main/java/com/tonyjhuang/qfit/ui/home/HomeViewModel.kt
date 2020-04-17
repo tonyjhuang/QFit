@@ -133,7 +133,7 @@ class HomeViewModel(
 
     }
 
-    fun didAchieveNewGoal(goalId: String, oldProgressAmount: Int, newProgressAmount: Int): Boolean {
+    private fun didAchieveNewGoal(goalId: String, oldProgressAmount: Int, newProgressAmount: Int): Boolean {
         var achievedGoals = 0
         var newlyAchievedGoals = 0
         for (group in userGroups.values) {

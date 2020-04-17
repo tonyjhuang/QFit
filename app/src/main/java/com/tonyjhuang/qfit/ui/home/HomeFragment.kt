@@ -1,7 +1,6 @@
 package com.tonyjhuang.qfit.ui.home
 
 import android.content.DialogInterface
-import android.graphics.Color
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -16,18 +15,15 @@ import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
 import com.tonyjhuang.qfit.R
 import com.tonyjhuang.qfit.data.*
+import com.tonyjhuang.qfit.ui.Konfetti
 import kotlinx.android.synthetic.main.fragment_home.*
 import kotlinx.android.synthetic.main.fragment_home.view.*
-import nl.dionsegijn.konfetti.KonfettiView
-import nl.dionsegijn.konfetti.models.Shape
-import nl.dionsegijn.konfetti.models.Size
 
 
 class HomeFragment : Fragment() {
 
     private lateinit var homeViewModel: HomeViewModel
     private lateinit var adapter: DailyUserProgressRecyclerViewAdapter
-    private lateinit var konfetti: KonfettiView
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -59,7 +55,6 @@ class HomeFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        konfetti = view.konfetti
 
         homeViewModel.header.observe(viewLifecycleOwner, Observer {
             header.text = it
@@ -84,24 +79,9 @@ class HomeFragment : Fragment() {
         })
         homeViewModel.events.observe(viewLifecycleOwner, Observer {
             when (it) {
-                is HomeViewModel.Event.AchievedNewGoalEvent -> {
-                    showConfetti()
-                }
+                is HomeViewModel.Event.AchievedNewGoalEvent -> Konfetti.show(view.konfetti)
             }
         })
-    }
-
-    private fun showConfetti() {
-        konfetti.build()
-            .addColors(Color.YELLOW, Color.GREEN, Color.MAGENTA)
-            .setDirection(0.0, 359.0)
-            .setSpeed(6f, 12f)
-            .setFadeOutEnabled(true)
-            .setTimeToLive(1000L)
-            .addShapes(Shape.Square, Shape.Circle)
-            .addSizes(Size(12), Size(16, 6f))
-            .setPosition(konfetti.x + konfetti.width / 2, konfetti.y + konfetti.height / 3)
-            .burst(100)
     }
 
     private fun getNewUserProgress(callback: (String) -> Unit) {

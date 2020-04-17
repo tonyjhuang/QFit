@@ -12,11 +12,10 @@ import androidx.viewpager2.widget.ViewPager2
 import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
 import com.tonyjhuang.qfit.R
-import com.tonyjhuang.qfit.data.GoalRepository
-import com.tonyjhuang.qfit.data.GroupRepository
-import com.tonyjhuang.qfit.data.ProgressRepository
-import com.tonyjhuang.qfit.data.UserRepository
+import com.tonyjhuang.qfit.data.*
+import com.tonyjhuang.qfit.ui.Konfetti
 import kotlinx.android.synthetic.main.fragment_view_group.*
+import kotlinx.android.synthetic.main.fragment_view_group.view.*
 
 class ViewGroupFragment : Fragment() {
 
@@ -38,6 +37,7 @@ class ViewGroupFragment : Fragment() {
             userRepository,
             groupRepository
         )
+        val currentUserRepository = CurrentUserRepository(userRepository)
         viewModel =
             ViewModelProviders.of(
                 this,
@@ -45,7 +45,8 @@ class ViewGroupFragment : Fragment() {
                     groupRepository,
                     userRepository,
                     goalRepository,
-                    progressRepository
+                    progressRepository,
+                    currentUserRepository
                 )
             ).get(ViewGroupViewModel::class.java)
 
@@ -73,6 +74,12 @@ class ViewGroupFragment : Fragment() {
 
         viewModel.groupGoalProgress.observe(viewLifecycleOwner, Observer {
             pagerAdapter.setStates(it.keys.toList())
+        })
+
+        viewModel.events.observe(viewLifecycleOwner, Observer {
+            when (it) {
+                is ViewGroupViewModel.Event.AchievedNewGoalEvent -> Konfetti.show(view.konfetti)
+            }
         })
 
         with(pager) {
