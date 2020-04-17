@@ -24,6 +24,7 @@ import com.tonyjhuang.qfit.data.GroupRepository
 import com.tonyjhuang.qfit.data.UserRepository
 import com.tonyjhuang.qfit.ui.creategroup.CreateGroupActivity
 import com.tonyjhuang.qfit.ui.creategroup.CreateGroupActivity.Companion.RES_GROUP_ID
+import kotlinx.android.synthetic.main.fragment_group_list.view.*
 
 
 class GroupListFragment : Fragment() {
@@ -64,6 +65,11 @@ class GroupListFragment : Fragment() {
         })
         viewModel.groupList.observe(viewLifecycleOwner, Observer {
             adapter.values = it
+            if (it.isEmpty()) {
+                view.empty_state.visibility = View.VISIBLE
+            } else {
+                view.empty_state.visibility = View.INVISIBLE
+            }
         })
         viewModel.events.observe(viewLifecycleOwner, Observer {
             when (it) {

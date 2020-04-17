@@ -3,9 +3,9 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:focusableInTouchMode="true"
-    android:focusable="true"
     android:layout_height="match_parent"
+    android:focusable="true"
+    android:focusableInTouchMode="true"
     tools:context=".ui.home.HomeFragment">
 
     <TextView
@@ -16,6 +16,14 @@
         android:layout_marginTop="8dp"
         android:layout_marginEnd="8dp"
         android:textAppearance="@android:style/TextAppearance.Large" />
+
+    <TextView
+        android:id="@+id/empty_state"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Join some groups to get started."
+        android:visibility="invisible"
+        android:layout_centerInParent="true" />
 
 
     <androidx.recyclerview.widget.RecyclerView

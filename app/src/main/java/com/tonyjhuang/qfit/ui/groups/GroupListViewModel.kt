@@ -52,6 +52,7 @@ class GroupListViewModel(
     }
 
     fun addNewGroup(name: String) {
+        // TODO join group if not already in
         groupRepository.getByName(name) { groupId, _ ->
             if (groupId != null) {
                 _events.value = Event.ViewGroupEvent(groupId)
@@ -62,6 +63,10 @@ class GroupListViewModel(
     }
 
     fun watchGroups(groupIds: List<String>) {
+        if (groupIds.isEmpty()) {
+            _groupList.postValue(emptyList())
+            return
+        }
         for ((id, listener) in groupListeners) {
             groupRepository.unwatchGroup(id, listener)
         }

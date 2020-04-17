@@ -83,6 +83,11 @@ class HomeFragment : Fragment() {
         homeViewModel.dailyUserProgress.observe(viewLifecycleOwner, Observer {
             adapter.dailyUserProgress = it
             adapter.notifyDataSetChanged()
+            if (it.isEmpty()) {
+                view.empty_state.visibility = View.VISIBLE
+            } else {
+                view.empty_state.visibility = View.INVISIBLE
+            }
         })
         homeViewModel.events.observe(viewLifecycleOwner, Observer {
             when (it) {

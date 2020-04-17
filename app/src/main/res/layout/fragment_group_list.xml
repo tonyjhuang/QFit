@@ -15,6 +15,15 @@
         android:textAppearance="@android:style/TextAppearance.Large"
         tools:text="Hello world" />
 
+
+    <TextView
+        android:id="@+id/empty_state"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Join some groups to get started."
+        android:visibility="invisible"
+        android:layout_centerInParent="true" />
+
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/list"
         android:name="com.tonyjhuang.qfit.ui.groups.GroupListFragment"

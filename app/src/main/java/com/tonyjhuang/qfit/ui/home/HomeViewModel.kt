@@ -60,6 +60,7 @@ class HomeViewModel(
     private fun setUpWatchers() {
         currentUserRepository.getCurrentUser { currentUserId, currentUser ->
             this.currentUserId = currentUserId
+            _dailyUserProgress.postValue(emptyList())
             val userGroups = currentUser.groups ?: return@getCurrentUser
             groupRepository.getByIds(userGroups.keys.toList()) {
                 handleUserGroups(it.filterValues { it != null } as Map<String, Group>)
