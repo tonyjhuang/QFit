@@ -18,6 +18,13 @@
         android:outlineProvider="bounds"
         android:padding="4dp">
 
+        <View
+            android:background="@color/finishedColorBase"
+            android:layout_width="match_parent"
+            android:layout_marginBottom="-36dp"
+            android:layout_height="match_parent"
+            android:layout_above="@+id/top_divider" />
+
         <TextView
             android:id="@+id/goal_name"
             style="?android:textAppearanceLarge"
@@ -29,40 +36,38 @@
             android:text="Running"
             android:textColor="#222" />
 
-        <RelativeLayout
-            android:id="@+id/imageview_container"
-            android:layout_width="match_parent"
-            android:layout_above="@+id/start_anchor"
-            android:layout_height="match_parent">
-            <ImageView
-                android:layout_centerHorizontal="true"
-                android:layout_alignParentBottom="true"
-                android:id="@+id/profile"
-                android:layout_width="48dp"
-                android:layout_height="48dp" />
-        </RelativeLayout>
-
         <View
+            android:id="@+id/top_divider"
             android:layout_width="match_parent"
-            android:layout_marginTop="50dp"
             android:layout_height="2dp"
             android:layout_below="@id/goal_name"
-            android:background="#222" />
+            android:layout_marginTop="36dp"
+            android:background="#DDD" />
 
+        <ImageView
+            android:layout_below="@+id/goal_name"
+            android:id="@+id/leaderboard"
+            android:background="@drawable/circle"
+            android:layout_width="72dp"
+            android:layout_height="72dp"
+            android:elevation="3dp"
+            android:clipToPadding="false"
+            android:layout_centerHorizontal="true"
+            android:src="@drawable/ic_leaderboard" />
 
         <View
+            android:id="@+id/bottom_divider"
             android:layout_width="match_parent"
             android:layout_height="2dp"
-            android:layout_alignParentBottom="true"
-            android:layout_marginBottom="50dp"
-            android:background="#222" />
+            android:layout_above="@id/initiate_progress_update"
+            android:background="#DDD" />
 
-        <Space
-            android:id="@+id/start_anchor"
-            android:layout_width="0dp"
-            android:layout_height="0dp"
-            android:layout_marginBottom="8dp"
-            android:layout_alignParentBottom="true" />
+        <Button
+            android:id="@+id/initiate_progress_update"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:text="log progress" />
 
     </RelativeLayout>
 </FrameLayout>
