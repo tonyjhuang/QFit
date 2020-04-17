@@ -10,6 +10,7 @@ import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
@@ -59,14 +60,20 @@ class HomeFragment : Fragment() {
         homeViewModel.header.observe(viewLifecycleOwner, Observer {
             header.text = it
         })
-        adapter = DailyUserProgressRecyclerViewAdapter { goalId ->
-            getNewUserProgress {
-                val newProgress = it.toIntOrNull() ?: 0
-                if (newProgress != 0) {
-                    homeViewModel.updateUserProgress(goalId, newProgress)
+        adapter = DailyUserProgressRecyclerViewAdapter(object : DailyUserProgressRecyclerViewAdapter.Listener {
+            override fun initiateProgressUpdate(goalId: String) {
+                getNewUserProgress {
+                    val newProgress = it.toIntOrNull() ?: 0
+                    if (newProgress != 0) {
+                        homeViewModel.updateUserProgress(goalId, newProgress)
+                    }
                 }
             }
-        }
+
+            override fun onGroupClicked(groupId: String) {
+                findNavController().navigate(HomeFragmentDirections.actionHomeToViewGroup(groupId))
+            }
+        })
 
         with(progress_list) {
             layoutManager = LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)

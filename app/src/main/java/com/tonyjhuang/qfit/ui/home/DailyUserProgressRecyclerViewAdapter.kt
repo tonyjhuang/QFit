@@ -16,7 +16,7 @@ import kotlinx.android.synthetic.main.list_item_group_target.view.*
 
 
 class DailyUserProgressRecyclerViewAdapter(
-    private val logExerciseListener: (String) -> Unit
+    private val listener: Listener
 ) : RecyclerView.Adapter<DailyUserProgressRecyclerViewAdapter.ViewHolder>() {
 
     private val viewPool = RecyclerView.RecycledViewPool()
@@ -66,55 +66,67 @@ class DailyUserProgressRecyclerViewAdapter(
         val currentProgress: TextView = view.current_progress
         val initiateProgressUpdateButton: Button = view.initiate_progress_update.apply {
             setOnClickListener {
-                logExerciseListener(dailyUserProgress[absoluteAdapterPosition].goalId)
+                listener.initiateProgressUpdate(dailyUserProgress[absoluteAdapterPosition].goalId)
+            }
+        }
+    }
+
+    interface Listener {
+        fun initiateProgressUpdate(goalId: String)
+
+        fun onGroupClicked(groupId: String)
+    }
+
+
+    inner class GroupTargetRecyclerViewAdapter(
+        private val context: Context,
+        groupTargets: List<GroupTarget>,
+        private val progressAmount: Int
+    ) : RecyclerView.Adapter<GroupTargetRecyclerViewAdapter.ViewHolder>() {
+
+        private val targets = groupTargets.sortedBy {
+            it.goalAmount
+        }.reversed()
+
+        override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
+            val view = LayoutInflater.from(parent.context)
+                .inflate(R.layout.list_item_group_target, parent, false)
+            return ViewHolder(view)
+        }
+
+        override fun getItemCount() = targets.size
+
+        override fun onBindViewHolder(holder: ViewHolder, position: Int) {
+            val groupTarget = targets[position]
+            holder.label.text = "${groupTarget.goalAmount} ${groupTarget.groupName}"
+            val achieved = groupTarget.goalAmount <= progressAmount
+            if (achieved) {
+                holder.label.setTextColor(
+                    ContextCompat.getColor(
+                        context,
+                        R.color.textColorGoalAchieved
+                    )
+                )
+                holder.label.setTypeface(null, Typeface.BOLD);
+            } else {
+                holder.label.setTextColor(
+                    ContextCompat.getColor(
+                        context,
+                        R.color.textColorGoalUnachieved
+                    )
+                )
+                holder.label.setTypeface(null, Typeface.NORMAL);
+            }
+        }
+
+        inner class ViewHolder(val view: View) : RecyclerView.ViewHolder(view) {
+            val label: TextView = view.group_target_label.apply {
+                setOnClickListener {
+                    listener.onGroupClicked(targets[absoluteAdapterPosition].id)
+                }
             }
         }
     }
 }
 
-class GroupTargetRecyclerViewAdapter(
-    private val context: Context,
-    groupTargets: List<GroupTarget>,
-    private val progressAmount: Int
-) : RecyclerView.Adapter<GroupTargetRecyclerViewAdapter.ViewHolder>() {
-
-    private val targets = groupTargets.sortedBy {
-        it.goalAmount
-    }.reversed()
-
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-        val view = LayoutInflater.from(parent.context)
-            .inflate(R.layout.list_item_group_target, parent, false)
-        return ViewHolder(view)
-    }
-
-    override fun getItemCount() = targets.size
-
-    override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        val groupTarget = targets[position]
-        holder.label.text = "${groupTarget.goalAmount} ${groupTarget.groupName}"
-        val achieved = groupTarget.goalAmount <= progressAmount
-        if (achieved) {
-            holder.label.setTextColor(
-                ContextCompat.getColor(
-                    context,
-                    R.color.textColorGoalAchieved
-                )
-            )
-            holder.label.setTypeface(null, Typeface.BOLD);
-        } else {
-            holder.label.setTextColor(
-                ContextCompat.getColor(
-                    context,
-                    R.color.textColorGoalUnachieved
-                )
-            )
-            holder.label.setTypeface(null, Typeface.NORMAL);
-        }
-    }
-
-    inner class ViewHolder(val view: View) : RecyclerView.ViewHolder(view) {
-        val label: TextView = view.group_target_label
-    }
-}
 
