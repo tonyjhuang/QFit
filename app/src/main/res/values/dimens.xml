@@ -8,4 +8,6 @@
     <dimen name="pageMarginAndOffset">50dp</dimen>
     <dimen name="pageMargin">40dp</dimen>
     <dimen name="pageOffset">40dp</dimen>
+    <dimen name="progress_divider_margin">40dp</dimen>
+
 </resources>

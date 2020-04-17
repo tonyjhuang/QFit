@@ -52,7 +52,7 @@ class CreateGroupViewModel(
     fun sanitizeGoalInput(goals: Map<String, String>) = goals
         .mapValues { it.value.toIntOrNull() }
         .filter { goalRegistry.containsKey(it.key) && it.value != null && it.value != 0 }
-        .mapValues { GroupGoal(goalRegistry[it.key]!!.name!!, it.value!!) }
+        .mapValues { GroupGoal(it.value!!) }
 
     private fun createNewGroup(name: String, goals: Map<String, GroupGoal>) {
         currentUserRepository.getCurrentUser { uid, _ ->

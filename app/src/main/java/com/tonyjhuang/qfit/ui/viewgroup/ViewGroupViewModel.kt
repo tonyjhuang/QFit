@@ -7,6 +7,7 @@ import androidx.lifecycle.ViewModelProvider
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.ValueEventListener
 import com.tonyjhuang.qfit.SimpleValueEventListener
+import com.tonyjhuang.qfit.data.GoalRepository
 import com.tonyjhuang.qfit.data.GroupRepository
 import com.tonyjhuang.qfit.data.UserRepository
 import com.tonyjhuang.qfit.data.models.Group
@@ -14,7 +15,8 @@ import com.tonyjhuang.qfit.data.models.User
 
 class ViewGroupViewModel(
     private val groupRepository: GroupRepository,
-    private val userRepository: UserRepository
+    private val userRepository: UserRepository,
+    private val goalRepository: GoalRepository
 ) : ViewModel() {
 
     //private val _events = SingleLiveEvent<Event>()
@@ -64,9 +66,13 @@ class ViewGroupViewModel(
     private fun handleNewGroup(group: Group) {
         _groupName.value = group.name
         watchUsers(group.members?.keys?.toList() ?: emptyList())
-        _groupGoals.postValue(group.goals?.mapValues { (key, value) ->
-            GroupGoalState(key, value.name!!, value.amount)
-        })
+        val groupGoals = group.goals?.keys?.toList()
+        groupGoals ?: return
+        goalRepository.getByIds(groupGoals) {
+            _groupGoals.postValue(group.goals.mapValues { (key, value) ->
+                GroupGoalState(key, it[key]!!.name!!, value.amount)
+            })
+        }
     }
 
 
@@ -108,11 +114,15 @@ data class GroupGoalState(val id: String, val name: String, val amount: Int)
 
 class ViewGroupViewModelFactory(
     private val groupRepository: GroupRepository,
-    private val userRepository: UserRepository
+    private val userRepository: UserRepository,
+    private val goalRepository: GoalRepository
 ) :
     ViewModelProvider.Factory {
     override fun <T : ViewModel?> create(modelClass: Class<T>): T {
-        return modelClass.getConstructor(GroupRepository::class.java, UserRepository::class.java)
-            .newInstance(groupRepository, userRepository)
+        return modelClass.getConstructor(
+            GroupRepository::class.java,
+            UserRepository::class.java,
+            GoalRepository::class.java
+        ).newInstance(groupRepository, userRepository, goalRepository)
     }
 }

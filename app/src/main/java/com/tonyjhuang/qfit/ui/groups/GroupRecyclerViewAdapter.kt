@@ -8,7 +8,7 @@ import android.widget.TextView
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.tonyjhuang.qfit.R
-import kotlinx.android.synthetic.main.group_item.view.*
+import kotlinx.android.synthetic.main.list_item_group.view.*
 
 
 class GroupRecyclerViewAdapter(
@@ -37,7 +37,7 @@ class GroupRecyclerViewAdapter(
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val view = LayoutInflater.from(parent.context)
-            .inflate(R.layout.group_item, parent, false)
+            .inflate(R.layout.list_item_group, parent, false)
         return ViewHolder(view)
     }
 

@@ -23,7 +23,7 @@
         android:layout_below="@+id/text_title"
         app:layoutManager="LinearLayoutManager"
         tools:context=".ui.groups.GroupListFragment"
-        tools:listitem="@layout/group_item" />
+        tools:listitem="@layout/list_item_group" />
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/add_group"

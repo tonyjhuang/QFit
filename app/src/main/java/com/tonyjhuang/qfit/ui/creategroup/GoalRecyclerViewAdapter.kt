@@ -10,7 +10,7 @@ import android.widget.EditText
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.tonyjhuang.qfit.R
-import kotlinx.android.synthetic.main.create_goal_item.view.*
+import kotlinx.android.synthetic.main.list_item_create_goal.view.*
 
 
 class GoalRecyclerViewAdapter(private val goals: List<CreateGoal>): RecyclerView.Adapter<GoalRecyclerViewAdapter.ViewHolder>() {
@@ -19,7 +19,7 @@ class GoalRecyclerViewAdapter(private val goals: List<CreateGoal>): RecyclerView
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val view = LayoutInflater.from(parent.context)
-            .inflate(R.layout.create_goal_item, parent, false)
+            .inflate(R.layout.list_item_create_goal, parent, false)
         return ViewHolder(view, TextListener())
     }
 
