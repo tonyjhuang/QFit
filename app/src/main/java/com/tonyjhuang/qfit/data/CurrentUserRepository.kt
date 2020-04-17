@@ -9,7 +9,7 @@ class CurrentUserRepository(private val userRepository: UserRepository) {
     fun fetchCurrentUser(callback: (String?, User?) -> Unit) {
         val firebaseUser = FirebaseAuth.getInstance().currentUser
         firebaseUser ?: return callback(null, null)
-        userRepository.get(firebaseUser.uid) {
+        userRepository.getById(firebaseUser.uid) {
             callback(firebaseUser.uid, it)
         }
     }
@@ -17,7 +17,7 @@ class CurrentUserRepository(private val userRepository: UserRepository) {
     fun getCurrentUser(callback: (String, User) -> Unit) {
         val firebaseUser = FirebaseAuth.getInstance().currentUser
         firebaseUser ?: throw RuntimeException("Couldn't get current user")
-        userRepository.get(firebaseUser.uid) {
+        userRepository.getById(firebaseUser.uid) {
             if (it == null) {
                 throw RuntimeException("Couldn't get current user")
             }

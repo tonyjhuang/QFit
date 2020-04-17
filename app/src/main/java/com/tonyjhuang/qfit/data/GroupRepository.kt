@@ -46,13 +46,13 @@ class GroupRepository(
         db.child(PATH).child(id).removeEventListener(listener)
     }
 
-    fun getByIds(ids: List<String>, callback: (Map<String, Group?>) -> Unit) {
-        val results = ids.associateWith { null as Group? }.toMutableMap()
+    fun getByIds(ids: List<String>, callback: (Map<String, Group>) -> Unit) {
+        val results: MutableMap<String, Group> = mutableMapOf()
         var remaining = ids.size
 
         for (id in ids) {
             getById(id) {
-                results[id] = it
+                if (it != null) results[id] = it
                 remaining--
                 if (remaining == 0) {
                     callback(results)

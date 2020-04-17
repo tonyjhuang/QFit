@@ -38,7 +38,11 @@ class HomeFragment : Fragment() {
         val currentUserRepository = CurrentUserRepository(userRepository)
         val groupRepository = GroupRepository(Firebase.database.reference, userRepository)
         val goalRepository = GoalRepository(Firebase.database.reference)
-        val progressRepository = UserProgressRepository(Firebase.database.reference)
+        val progressRepository = ProgressRepository(
+            Firebase.database.reference,
+            userRepository,
+            groupRepository
+        )
         homeViewModel =
             ViewModelProviders.of(
                 this,

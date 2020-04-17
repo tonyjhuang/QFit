@@ -20,7 +20,7 @@ class HomeViewModel(
     private val groupRepository: GroupRepository,
     private val currentUserRepository: CurrentUserRepository,
     private val goalRepository: GoalRepository,
-    private val progressRepository: UserProgressRepository,
+    private val progressRepository: ProgressRepository,
     private val userRepository: UserRepository
 ) : ViewModel() {
 
@@ -64,7 +64,7 @@ class HomeViewModel(
             groupRepository.getByIds(userGroups.keys.toList()) {
                 handleUserGroups(it.filterValues { it != null } as Map<String, Group>)
             }
-            progressRepository.watchDailyProgress(currentUserId, today, userProgressListener)
+            progressRepository.watchUserDailyProgress(currentUserId, today, userProgressListener)
         }
     }
 
@@ -124,7 +124,7 @@ class HomeViewModel(
             _events.postValue(Event.AchievedNewGoalEvent())
         }
 
-        progressRepository.addProgress(
+        progressRepository.addUserProgress(
             currentUserId,
             goalId,
             today,
@@ -145,7 +145,7 @@ class HomeViewModel(
     }
 
     override fun onCleared() {
-        progressRepository.unwatchDailyProgress(currentUserId, today, userProgressListener)
+        progressRepository.unwatchUserDailyProgress(currentUserId, today, userProgressListener)
         super.onCleared()
     }
 
@@ -171,7 +171,7 @@ class HomeViewModelFactory(
     private val groupRepository: GroupRepository,
     private val currentUserRepository: CurrentUserRepository,
     private val goalRepository: GoalRepository,
-    private val progressRepository: UserProgressRepository,
+    private val progressRepository: ProgressRepository,
     private val userRepository: UserRepository
 
 ) :
@@ -181,7 +181,7 @@ class HomeViewModelFactory(
             GroupRepository::class.java,
             CurrentUserRepository::class.java,
             GoalRepository::class.java,
-            UserProgressRepository::class.java,
+            ProgressRepository::class.java,
             UserRepository::class.java
         ).newInstance(
             groupRepository,

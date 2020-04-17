@@ -5,22 +5,23 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.google.firebase.database.DataSnapshot
-import com.google.firebase.database.ValueEventListener
 import com.tonyjhuang.qfit.SimpleValueEventListener
 import com.tonyjhuang.qfit.data.GoalRepository
 import com.tonyjhuang.qfit.data.GroupRepository
+import com.tonyjhuang.qfit.data.ProgressRepository
 import com.tonyjhuang.qfit.data.UserRepository
+import com.tonyjhuang.qfit.data.models.Goal
 import com.tonyjhuang.qfit.data.models.Group
 import com.tonyjhuang.qfit.data.models.User
+import com.tonyjhuang.qfit.data.models.UserProgress
+import java.util.*
 
 class ViewGroupViewModel(
     private val groupRepository: GroupRepository,
     private val userRepository: UserRepository,
-    private val goalRepository: GoalRepository
+    private val goalRepository: GoalRepository,
+    private val progressRepository: ProgressRepository
 ) : ViewModel() {
-
-    //private val _events = SingleLiveEvent<Event>()
-    //val events: LiveData<Event> = _events
 
     private val _groupName = MutableLiveData<String>()
     val groupName: LiveData<String> = _groupName
@@ -28,12 +29,16 @@ class ViewGroupViewModel(
     private val _totalMembers = MutableLiveData(0)
     val totalMembers: LiveData<Int> = _totalMembers
 
-    private val _groupGoals = MutableLiveData<Map<String, GroupGoalState>>()
-    val groupGoals: LiveData<Map<String, GroupGoalState>> = _groupGoals
+    private lateinit var groupData: Group
+    private var userData: Map<String, User> = emptyMap()
+    private var groupGoalData: Map<String, Goal> = emptyMap()
 
-    private val userListeners: MutableMap<String, ValueEventListener> = mutableMapOf()
-    private val userData: MutableMap<String, User> = mutableMapOf()
+    private val _groupGoalProgress = MutableLiveData<Map<String, GroupGoalProgressView>>()
+    val groupGoalProgress: LiveData<Map<String, GroupGoalProgressView>> = _groupGoalProgress
 
+    private val groupDailyProgressListener = GroupDailyProgressListener()
+
+    private val today = Calendar.getInstance().time
     private lateinit var groupId: String
     private val groupListener = object : SimpleValueEventListener() {
         override fun onDataChange(p0: DataSnapshot) {
@@ -50,79 +55,102 @@ class ViewGroupViewModel(
         groupRepository.watchGroup(id, groupListener)
     }
 
-    fun watchUsers(userIds: List<String>) {
-        for ((id, listener) in userListeners) {
-            userRepository.unwatchUser(id, listener)
-        }
-        userListeners.clear()
-        for (id in userIds) {
-            val listener = SimpleUserListener(id)
-            userListeners[id] = listener
-            userRepository.watchUser(id, listener)
-        }
-        _totalMembers.postValue(userIds.size)
-    }
 
     private fun handleNewGroup(group: Group) {
-        _groupName.value = group.name
-        watchUsers(group.members?.keys?.toList() ?: emptyList())
-        val groupGoals = group.goals?.keys?.toList()
-        groupGoals ?: return
-        goalRepository.getByIds(groupGoals) {
-            _groupGoals.postValue(group.goals.mapValues { (key, value) ->
-                GroupGoalState(key, it[key]!!.name!!, value.amount)
-            })
+        groupData = group
+        _groupName.postValue(group.name)
+
+        val memberIds = group.members?.keys?.toList() ?: emptyList()
+        _totalMembers.postValue(memberIds.size)
+
+        val groupGoals = group.goals ?: return
+        goalRepository.getByIds(groupGoals.keys.toList()) {
+            groupGoalData = it
+            userRepository.getByIds(memberIds) {
+                userData = it
+                watchGroupProgress(groupId)
+            }
         }
     }
 
-
-    private fun notifyDataSetChanged() {
-        // TODO update member photo recyclerview
-        /*val newGroupList = mutableListOf<GroupItem>()
-        for ((id, group) in groupData) {
-            newGroupList.add(GroupItem(id, group.name ?: "", group.members?.size ?: 0))
-        }
-        _groupList.postValue(newGroupList)*/
+    private fun watchGroupProgress(groupId: String) {
+        progressRepository.watchGroupDailyProress(groupId, today, groupDailyProgressListener)
     }
 
     override fun onCleared() {
         groupRepository.unwatchGroup(groupId, groupListener)
-
-        for ((userId, userListener) in userListeners) {
-            userRepository.unwatchUserGroups(userId, userListener)
-        }
+        progressRepository.unwatchGroupDailyProress(groupId, today, groupDailyProgressListener)
         super.onCleared()
     }
 
-
-    inner class SimpleUserListener(private val id: String) : SimpleValueEventListener() {
+    inner class GroupDailyProgressListener : SimpleValueEventListener() {
         override fun onDataChange(p0: DataSnapshot) {
-            val user = p0.getValue(User::class.java)
-            if (user == null) {
-                userData.remove(id)
+            if (!p0.exists()) {
+                generateAndEmitGroupGoalProgressView(emptyMap())
                 return
             }
-            userData[id] = user
-            notifyDataSetChanged()
         }
+    }
+
+    fun generateAndEmitGroupGoalProgressView(serverGroupProgress: Map<String, Map<String, UserProgress>>) {
+        val res = mutableMapOf<String, GroupGoalProgressView>()
+        for ((goalId, goal) in groupGoalData) {
+            val groupGoal = groupData.goals?.get(goalId) ?: continue
+            res[goalId] =
+                GroupGoalProgressView(
+                    goalId,
+                    goal.name!!,
+                    groupGoal.amount,
+                    generateCurrentUserProgress(serverGroupProgress[goalId])
+                )
+        }
+        _groupGoalProgress.postValue(res)
+    }
+
+    private fun generateCurrentUserProgress(
+        serverUserProgress: Map<String, UserProgress>?
+    ): List<CurrentUserProgress> {
+        val res = mutableListOf<CurrentUserProgress>()
+        for ((userId, user) in userData) {
+            res.add(
+                CurrentUserProgress(
+                    userId,
+                    user.photo_url!!,
+                    serverUserProgress?.get(userId)?.amount ?: 0
+                )
+            )
+        }
+        return res.sortedByDescending { it.userProgressAmount }
     }
 }
 
+data class GroupGoalProgressView(
+    val goalId: String,
+    val goalName: String,
+    val goalAmount: Int,
+    val userProgress: List<CurrentUserProgress>
+)
 
-data class GroupGoalState(val id: String, val name: String, val amount: Int)
+data class CurrentUserProgress(
+    val userId: String,
+    val userPhotoUrl: String,
+    val userProgressAmount: Int
+)
 
 
 class ViewGroupViewModelFactory(
     private val groupRepository: GroupRepository,
     private val userRepository: UserRepository,
-    private val goalRepository: GoalRepository
+    private val goalRepository: GoalRepository,
+    private val progressRepository: ProgressRepository
 ) :
     ViewModelProvider.Factory {
     override fun <T : ViewModel?> create(modelClass: Class<T>): T {
         return modelClass.getConstructor(
             GroupRepository::class.java,
             UserRepository::class.java,
-            GoalRepository::class.java
-        ).newInstance(groupRepository, userRepository, goalRepository)
+            GoalRepository::class.java,
+            ProgressRepository::class.java
+        ).newInstance(groupRepository, userRepository, goalRepository, progressRepository)
     }
 }

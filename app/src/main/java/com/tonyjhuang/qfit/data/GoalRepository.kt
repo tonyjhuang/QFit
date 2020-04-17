@@ -3,9 +3,7 @@ package com.tonyjhuang.qfit.data
 import com.google.firebase.database.*
 import com.tonyjhuang.qfit.data.models.Goal
 
-class GoalRepository(
-    private val db: DatabaseReference
-) {
+class GoalRepository(private val db: DatabaseReference) {
     fun getAll(callback: (Map<String, Goal>) -> Unit) {
         db.child(PATH).addListenerForSingleValueEvent(object : ValueEventListener {
             override fun onCancelled(p0: DatabaseError) {

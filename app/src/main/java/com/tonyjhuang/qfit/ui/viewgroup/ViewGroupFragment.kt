@@ -14,6 +14,7 @@ import com.google.firebase.ktx.Firebase
 import com.tonyjhuang.qfit.R
 import com.tonyjhuang.qfit.data.GoalRepository
 import com.tonyjhuang.qfit.data.GroupRepository
+import com.tonyjhuang.qfit.data.ProgressRepository
 import com.tonyjhuang.qfit.data.UserRepository
 import kotlinx.android.synthetic.main.fragment_view_group.*
 
@@ -32,13 +33,19 @@ class ViewGroupFragment : Fragment() {
         val userRepository = UserRepository(Firebase.database.reference)
         val groupRepository = GroupRepository(Firebase.database.reference, userRepository)
         val goalRepository = GoalRepository(Firebase.database.reference)
+        val progressRepository = ProgressRepository(
+            Firebase.database.reference,
+            userRepository,
+            groupRepository
+        )
         viewModel =
             ViewModelProviders.of(
                 this,
                 ViewGroupViewModelFactory(
                     groupRepository,
                     userRepository,
-                    goalRepository
+                    goalRepository,
+                    progressRepository
                 )
             ).get(ViewGroupViewModel::class.java)
 
@@ -64,7 +71,7 @@ class ViewGroupFragment : Fragment() {
             member_count.text = it.toString() + " members"
         })
 
-        viewModel.groupGoals.observe(viewLifecycleOwner, Observer {
+        viewModel.groupGoalProgress.observe(viewLifecycleOwner, Observer {
             pagerAdapter.setStates(it.keys.toList())
         })
 

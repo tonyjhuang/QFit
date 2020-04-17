@@ -63,14 +63,8 @@ FIREBASE DATA SCHEMA
     "$group_id": {
       "$date": {
         "$goal_id": {
-          "done_users": {
-            "$user_id": true
-          },
-          "in_progress_users": {
-            "$user_id": true
-          },
-          "inactive_users": {
-            "$user_id": true
+          "$user_id": {
+            "amount": 50
           }
         }
       }

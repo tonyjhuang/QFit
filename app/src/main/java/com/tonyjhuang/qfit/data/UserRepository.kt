@@ -4,9 +4,24 @@ import com.google.firebase.database.*
 import com.tonyjhuang.qfit.data.models.User
 
 class UserRepository(private val db: DatabaseReference) {
-    fun get(id: String, callback: (User?) -> Unit) {
+    fun getById(id: String, callback: (User?) -> Unit) {
         db.child("$PATH/$id")
             .addListenerForSingleValueEvent(UserValueListener(callback))
+    }
+
+    fun getByIds(ids: List<String>, callback: (Map<String, User>) -> Unit) {
+        val results = mutableMapOf<String, User>()
+        var remaining = ids.size
+
+        for (id in ids) {
+            getById(id) {
+                if (it != null) results[id] = it
+                remaining--
+                if (remaining == 0) {
+                    callback(results)
+                }
+            }
+        }
     }
 
     fun create(id: String, name: String, photoUrl: String, callback: (User?) -> Unit) {

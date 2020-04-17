@@ -4,23 +4,23 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.activityViewModels
-import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
-import com.tonyjhuang.qfit.QLog
 import com.tonyjhuang.qfit.R
-import kotlinx.android.synthetic.main.content_group_goal.*
+import kotlinx.android.synthetic.main.fragment_group_goal_progress.*
+import kotlinx.android.synthetic.main.fragment_group_goal_progress.view.*
 
-class GroupGoalPageFragment : Fragment() {
+class GroupGoalProgressPageFragment : Fragment() {
 
     private lateinit var viewModel: ViewGroupViewModel
+    private lateinit var profile: ImageView
 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ) = inflater.inflate(R.layout.content_group_goal, container, false)
+    ) = inflater.inflate(R.layout.fragment_group_goal_progress, container, false)
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -28,10 +28,11 @@ class GroupGoalPageFragment : Fragment() {
         viewModel = (requireParentFragment() as ViewGroupFragment).viewModel
         val goalId = requireArguments().getString(ARG_GROUP_GOAL_ID)!!
         goal_name.text = goalId
+        profile = view.profile
 
-        viewModel.groupGoals.observe(viewLifecycleOwner, Observer {
-            val goal: GroupGoalState = it[goalId]!!
-            goal_name.text = "${goal.amount} ${goal.name}"
+        viewModel.groupGoalProgress.observe(viewLifecycleOwner, Observer {
+            val progressView: GroupGoalProgressView = it[goalId]!!
+            goal_name.text = "${progressView.goalAmount} ${progressView.goalName}"
         })
     }
 

@@ -10,7 +10,6 @@ import android.widget.TextView
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.facebook.shimmer.ShimmerFrameLayout
 import com.tonyjhuang.qfit.R
 import kotlinx.android.synthetic.main.list_item_daily_user_progress.view.*
 import kotlinx.android.synthetic.main.list_item_group_target.view.*
