@@ -14,9 +14,6 @@ class SingleLiveEvent<T> : MutableLiveData<T>() {
     private val pending = AtomicBoolean(false)
     @MainThread
     override fun observe(owner: LifecycleOwner, observer: Observer<in T>) {
-        if (hasActiveObservers()) {
-            QLog.d("Multiple observers registered but only one will be notified of changes.")
-        }
         // Observe the internal MutableLiveData
         super.observe(owner, Observer { t ->
             if (pending.compareAndSet(true, false)) {

@@ -72,7 +72,6 @@ class DailyUserProgressRecyclerViewAdapter(private val context: Context) :
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int, payloads: MutableList<Any>) {
-        QLog.d("new onBindViewHolder position: $position ")
         onBindViewHolder(holder, position)
     }
 
