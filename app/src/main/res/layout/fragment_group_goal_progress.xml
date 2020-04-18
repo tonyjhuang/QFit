@@ -15,15 +15,17 @@
         android:layout_height="match_parent"
         android:clipToPadding="false"
         android:elevation="4dp"
-        android:outlineProvider="bounds"
-        android:padding="4dp">
+        android:outlineProvider="bounds">
 
         <View
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_above="@+id/top_divider"
+            android:layout_marginLeft="4dp"
+            android:layout_marginTop="4dp"
+            android:layout_marginRight="4dp"
             android:layout_marginBottom="-36dp"
-            android:background="@color/finishedColorBase" />
+            android:background="@color/groupGoalHeader" />
 
         <TextView
             android:id="@+id/goal_name"
@@ -41,7 +43,9 @@
             android:layout_width="match_parent"
             android:layout_height="2dp"
             android:layout_below="@id/goal_name"
+            android:layout_marginLeft="4dp"
             android:layout_marginTop="36dp"
+            android:layout_marginRight="4dp"
             android:background="#DDD" />
 
 
@@ -49,11 +53,10 @@
             android:id="@+id/user_progress_recyclerview"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:paddingLeft="8dp"
-            android:paddingRight="8dp"
-            android:paddingTop="8dp"
             android:layout_above="@+id/bottom_divider"
-            android:layout_below="@+id/top_divider" />
+            android:layout_below="@+id/top_divider"
+            android:paddingLeft="8dp"
+            android:paddingRight="8dp" />
 
         <ImageView
             android:id="@+id/leaderboard"
@@ -72,6 +75,8 @@
             android:layout_width="match_parent"
             android:layout_height="2dp"
             android:layout_above="@id/initiate_progress_update"
+            android:layout_marginLeft="4dp"
+            android:layout_marginRight="4dp"
             android:background="#DDD" />
 
         <Button
@@ -79,6 +84,9 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_alignParentBottom="true"
+            android:layout_marginLeft="4dp"
+            android:layout_marginRight="4dp"
+            android:padding="8dp"
             android:text="log progress" />
 
     </RelativeLayout>

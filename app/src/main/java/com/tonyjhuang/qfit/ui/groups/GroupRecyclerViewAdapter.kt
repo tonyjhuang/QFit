@@ -62,31 +62,31 @@ class GroupRecyclerViewAdapter(
     }
 
     class MyDiffCallback(
-        private val newGroupItems: List<GroupItem>,
-        private val oldGroupItems: List<GroupItem>
+        private val oldItems: List<GroupItem>,
+        private val newItems: List<GroupItem>
     ) :
         DiffUtil.Callback() {
 
         override fun getOldListSize(): Int {
-            return oldGroupItems.size
+            return oldItems.size
         }
 
         override fun getNewListSize(): Int {
-            return newGroupItems.size
+            return newItems.size
         }
 
         override fun areItemsTheSame(
             oldItemPosition: Int,
             newItemPosition: Int
         ): Boolean {
-            return oldGroupItems[oldItemPosition].id === newGroupItems[newItemPosition].id
+            return oldItems[oldItemPosition].id === newItems[newItemPosition].id
         }
 
         override fun areContentsTheSame(
             oldItemPosition: Int,
             newItemPosition: Int
         ): Boolean {
-            return oldGroupItems[oldItemPosition] == newGroupItems[newItemPosition]
+            return oldItems[oldItemPosition] == newItems[newItemPosition]
         }
     }
 }

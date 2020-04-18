@@ -6,4 +6,6 @@
     <color name="textColorGoalAchieved">#DD000000</color>
     <color name="textColorGoalUnachieved">#88000000</color>
     <color name="finishedColorBase">#FFFFE0</color>
+    <color name="groupGoalHeader">#1000</color>
+    <color name="plainBackground">#FFF</color>
 </resources>

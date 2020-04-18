@@ -53,13 +53,23 @@ class GroupListViewModel(
 
     fun addNewGroup(name: String) {
         // TODO join group if not already in
-        groupRepository.getByName(name) { groupId, _ ->
-            if (groupId != null) {
-                _events.value = Event.ViewGroupEvent(groupId)
+        groupRepository.getByName(name) { groupId, group ->
+            if (groupId != null && group != null) {
+                if (isUserInGroup(currentUserId, group)) {
+                    _events.value = Event.ViewGroupEvent(groupId)
+                } else {
+                    groupRepository.addMember(groupId, currentUserId) {
+                        _events.value = Event.ViewGroupEvent(groupId)
+                    }
+                }
                 return@getByName
             }
             _events.value = Event.CreateNewGroupEvent(name)
         }
+    }
+
+    fun isUserInGroup(userId: String, group: Group): Boolean {
+        return group.members?.get(userId) == true
     }
 
     fun watchGroups(groupIds: List<String>) {

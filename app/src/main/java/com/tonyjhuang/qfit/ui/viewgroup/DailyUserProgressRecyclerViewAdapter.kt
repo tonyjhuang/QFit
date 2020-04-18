@@ -9,6 +9,7 @@ import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
+import com.tonyjhuang.qfit.QLog
 import com.tonyjhuang.qfit.R
 import kotlinx.android.synthetic.main.list_item_group_goal_user_progress.view.*
 
@@ -44,17 +45,6 @@ class DailyUserProgressRecyclerViewAdapter(private val context: Context) :
                 )
             )
             holder.userPhoto.alpha = 1f
-            if (item.finished) {
-                holder.userInfo.setTextColor(
-                    ContextCompat.getColor(
-                        context,
-                        R.color.textColorGoalAchieved
-                    )
-                )
-                holder.userInfo.setTypeface(null, Typeface.BOLD);
-            } else {
-                holder.userInfo.setTypeface(null, Typeface.NORMAL);
-            }
         } else {
             holder.userInfo.setTextColor(
                 ContextCompat.getColor(
@@ -64,43 +54,65 @@ class DailyUserProgressRecyclerViewAdapter(private val context: Context) :
             )
             holder.userPhoto.alpha = 0.5f
         }
+
+        holder.container.setBackgroundColor(
+            ContextCompat.getColor(
+                context,
+                if (item.finished) R.color.finishedColorBase else R.color.plainBackground
+            )
+        )
+        if (item.isCurrentUser) {
+            holder.userInfo.setTypeface(null, Typeface.BOLD);
+        } else {
+            holder.userInfo.setTypeface(null, Typeface.NORMAL);
+        }
         Glide.with(context)
             .load(item.userPhotoUrl)
             .into(holder.userPhoto)
     }
 
+    override fun onBindViewHolder(holder: ViewHolder, position: Int, payloads: MutableList<Any>) {
+        QLog.d("new onBindViewHolder position: $position ")
+        onBindViewHolder(holder, position)
+    }
+
     inner class ViewHolder(val view: View) : RecyclerView.ViewHolder(view) {
+        val container = view.container
         val userInfo = view.user_info
         val userPhoto = view.user_photo
     }
 
 
     class MyDiffCallback(
-        private val newGroupItems: List<CurrentUserProgress>,
-        private val oldGroupItems: List<CurrentUserProgress>
+        private val oldItems: List<CurrentUserProgress>,
+        private val newItems: List<CurrentUserProgress>
     ) :
         DiffUtil.Callback() {
 
         override fun getOldListSize(): Int {
-            return oldGroupItems.size
+            return oldItems.size
         }
 
         override fun getNewListSize(): Int {
-            return newGroupItems.size
+            return newItems.size
         }
 
         override fun areItemsTheSame(
             oldItemPosition: Int,
             newItemPosition: Int
         ): Boolean {
-            return oldGroupItems[oldItemPosition].userId === newGroupItems[newItemPosition].userId
+            return oldItems[oldItemPosition].userId === newItems[newItemPosition].userId
         }
 
         override fun areContentsTheSame(
             oldItemPosition: Int,
             newItemPosition: Int
         ): Boolean {
-            return oldGroupItems[oldItemPosition] == newGroupItems[newItemPosition]
+            return oldItems[oldItemPosition] == newItems[newItemPosition]
+        }
+
+        override fun getChangePayload(oldItemPosition: Int, newItemPosition: Int): Any? {
+            return super.getChangePayload(oldItemPosition, newItemPosition)
         }
     }
 }

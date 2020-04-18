@@ -46,7 +46,6 @@ FIREBASE DATA SCHEMA
   "groups": {
     "$group_id": {
       "name": "runners club"
-      "total_members": 10
       "members": {  # Member list
         "$user_id": true
       },

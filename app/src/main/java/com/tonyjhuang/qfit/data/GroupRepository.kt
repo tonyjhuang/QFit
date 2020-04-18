@@ -61,6 +61,16 @@ class GroupRepository(
         }
     }
 
+    fun addMember(groupId: String, userId: String, callback: () -> Unit) {
+        db.child("$PATH/$groupId/members/$userId")
+            .setValue(true)
+            .addOnCompleteListener {
+                userRepository.addGroupMembership(userId, groupId)
+                callback()
+            }
+
+    }
+
     fun create(
         name: String,
         creatorId: String,
