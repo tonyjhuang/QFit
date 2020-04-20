@@ -33,7 +33,7 @@
     </style>
     
     <style name="HeaderText">
-        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:textAppearance">@android:style/TextAppearance.Large</item>
         <item name="android:layout_margin">8dp</item>
