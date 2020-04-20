@@ -1,0 +1,54 @@
+{
+  "rules": {
+    "goals": {
+      ".read": true,
+      ".write": false
+    },
+    "users": {
+      "$user_id": {
+       ".read": true,
+       ".write": "$user_id === auth.uid"
+      }
+    },
+    "groups": {
+      "$group_id": {
+        "metadata": {
+          ".read": true,
+          ".write": "data.child('creator_id').val() === auth.uid || !data.exists()",
+          ".validate": "newData.child('creator_id').val() === auth.uid"
+        },
+        "members": {
+          "$member_id": {
+            ".read": true,
+            ".write": "$member_id === auth.uid"
+          }
+        },
+        "goals": {
+          ".read": true,
+          ".write": "data.parent().child('metadata/creator_id').val() === auth.uid"
+        }
+      }
+    },
+    "group_progress": {
+      "$group_id": {
+        "$date": {
+          "$goal_id": {
+            "$user_id": {
+              ".read": true,
+              ".write": "$user_id === auth.uid",
+              "amount": {
+                ".validate": "newData.isNumber()"
+              }
+            }
+          }
+        }
+      }
+    },
+    "user_progress": {
+      "$user_id": {
+        ".read": "$user_id === auth.uid",
+        ".write": "$user_id === auth.uid"
+      }
+    }
+  }
+}
