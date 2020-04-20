@@ -9,7 +9,6 @@ import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
-import com.tonyjhuang.qfit.QLog
 import com.tonyjhuang.qfit.R
 import kotlinx.android.synthetic.main.list_item_group_goal_user_progress.view.*
 
@@ -21,7 +20,7 @@ class DailyUserProgressRecyclerViewAdapter(private val context: Context) :
             val oldValues = field
             field = value
             val diffResult =
-                DiffUtil.calculateDiff(MyDiffCallback(oldValues, value))
+                DiffUtil.calculateDiff(CurrentUserProgressDiffCallback(oldValues, value))
             diffResult.dispatchUpdatesTo(this)
         }
 
@@ -81,37 +80,34 @@ class DailyUserProgressRecyclerViewAdapter(private val context: Context) :
         val userPhoto = view.user_photo
     }
 
+}
 
-    class MyDiffCallback(
-        private val oldItems: List<CurrentUserProgress>,
-        private val newItems: List<CurrentUserProgress>
-    ) :
-        DiffUtil.Callback() {
 
-        override fun getOldListSize(): Int {
-            return oldItems.size
-        }
+class CurrentUserProgressDiffCallback(
+    private val oldItems: List<CurrentUserProgress>,
+    private val newItems: List<CurrentUserProgress>
+) :
+    DiffUtil.Callback() {
 
-        override fun getNewListSize(): Int {
-            return newItems.size
-        }
+    override fun getOldListSize(): Int {
+        return oldItems.size
+    }
 
-        override fun areItemsTheSame(
-            oldItemPosition: Int,
-            newItemPosition: Int
-        ): Boolean {
-            return oldItems[oldItemPosition].userId === newItems[newItemPosition].userId
-        }
+    override fun getNewListSize(): Int {
+        return newItems.size
+    }
 
-        override fun areContentsTheSame(
-            oldItemPosition: Int,
-            newItemPosition: Int
-        ): Boolean {
-            return oldItems[oldItemPosition] == newItems[newItemPosition]
-        }
+    override fun areItemsTheSame(
+        oldItemPosition: Int,
+        newItemPosition: Int
+    ): Boolean {
+        return oldItems[oldItemPosition].userId === newItems[newItemPosition].userId
+    }
 
-        override fun getChangePayload(oldItemPosition: Int, newItemPosition: Int): Any? {
-            return super.getChangePayload(oldItemPosition, newItemPosition)
-        }
+    override fun areContentsTheSame(
+        oldItemPosition: Int,
+        newItemPosition: Int
+    ): Boolean {
+        return oldItems[oldItemPosition] == newItems[newItemPosition]
     }
 }

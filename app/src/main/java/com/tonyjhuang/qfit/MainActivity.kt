@@ -30,6 +30,7 @@ class MainActivity : AppCompatActivity() {
         userRepository = UserRepository(Firebase.database.reference)
         currentUserRepository = CurrentUserRepository(userRepository)
         authenticateUser()
+        supportActionBar?.hide()
     }
 
     private fun authenticateUser() {

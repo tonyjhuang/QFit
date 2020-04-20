@@ -13,17 +13,17 @@
         android:layout_height="24dp"
         android:layout_alignParentTop="true" />
 
-    <ImageView
+    <com.mikhaellopez.circularimageview.CircularImageView
         android:id="@+id/user_photo"
-        android:layout_width="36dp"
-        android:layout_height="36dp"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
         android:layout_below="@+id/header_spacer"
         android:scaleType="centerCrop" />
 
     <TextView
         android:id="@+id/user_info"
         android:layout_width="wrap_content"
-        android:layout_height="36dp"
+        android:layout_height="48dp"
         android:layout_alignBottom="@+id/user_photo"
         android:layout_marginStart="8dp"
         android:layout_marginEnd="8dp"

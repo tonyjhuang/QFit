@@ -26,8 +26,8 @@ class ViewGroupViewModel(
     private val _groupName = MutableLiveData<String>()
     val groupName: LiveData<String> = _groupName
 
-    private val _totalMembers = MutableLiveData(0)
-    val totalMembers: LiveData<Int> = _totalMembers
+    private val _groupMembers = MutableLiveData<List<GroupMember>>()
+    val groupMembers: LiveData<List<GroupMember>> = _groupMembers
 
     private lateinit var groupData: Group
     private var userData: Map<String, User> = emptyMap()
@@ -68,13 +68,14 @@ class ViewGroupViewModel(
         _groupName.postValue(group.name)
 
         val memberIds = group.members?.keys?.toList() ?: emptyList()
-        _totalMembers.postValue(memberIds.size)
-
         val groupGoals = group.goals ?: return
         goalRepository.getByIds(groupGoals.keys.toList()) {
             groupGoalData = it
             userRepository.getByIds(memberIds) {
                 userData = it
+                _groupMembers.postValue(it.map { (id, user) ->
+                    GroupMember(id, user.photo_url!!)
+                })
                 watchGroupProgress(groupId)
             }
         }
@@ -173,6 +174,11 @@ class ViewGroupViewModel(
         class AchievedNewGoalEvent : Event()
     }
 }
+
+data class GroupMember(
+    val userId: String,
+    val userPhotoUrl: String
+)
 
 data class GroupGoalProgressView(
     val goalId: String,
