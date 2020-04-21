@@ -59,7 +59,10 @@ class HomeFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         homeViewModel.header.observe(viewLifecycleOwner, Observer {
-            header.text = it
+            view.header.text = it
+        })
+        homeViewModel.subheader.observe(viewLifecycleOwner, Observer {
+            view.subtext.text = it
         })
         homeViewModel.userPhoto.observe(viewLifecycleOwner, Observer {
             Glide.with(requireContext())

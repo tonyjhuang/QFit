@@ -26,6 +26,9 @@ class HomeViewModel(
 
     private val _header = MutableLiveData<String>()
     val header: LiveData<String> = _header
+    private val _subheader = MutableLiveData<String>()
+    val subheader: LiveData<String> = _subheader
+
     private lateinit var currentUserId: String
 
     private val _userPhoto = MutableLiveData<String>()
@@ -64,6 +67,8 @@ class HomeViewModel(
         currentUserRepository.getCurrentUser { currentUserId, currentUser ->
             this.currentUserId = currentUserId
             _userPhoto.postValue(currentUser.photo_url!!)
+            val firstName = currentUser.name!!.substringBefore(" ").capitalize()
+            _subheader.postValue("Welcome back, $firstName. It's time to train.")
             val userGroupIds = currentUser.groups?.keys?.toList() ?: emptyList()
             if (userGroupIds.isEmpty()) {
                 _dailyUserProgress.postValue(emptyList())
