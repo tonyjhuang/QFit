@@ -106,7 +106,7 @@ class HomeViewModel(
         _subheader.postValue(welcomeText + (if (finished) {
             "You're all done for today! 🎉"
         } else {
-            "It's time to train. 🦾"
+            "It's time to train. 🔥"
         }))
 
     }
