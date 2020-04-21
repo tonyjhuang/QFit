@@ -5,10 +5,13 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
+import androidx.appcompat.widget.PopupMenu
 import androidx.core.view.ViewCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.viewpager2.widget.ViewPager2
 import com.google.firebase.database.ktx.database
@@ -71,6 +74,9 @@ class ViewGroupFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        view.overflow.setOnClickListener { showOverflow(view.overflow) }
+
         with(view.pager) {
             adapter = pagerAdapter
             offscreenPageLimit = 3
@@ -114,7 +120,43 @@ class ViewGroupFragment : Fragment() {
         viewModel.events.observe(viewLifecycleOwner, Observer {
             when (it) {
                 is ViewGroupViewModel.Event.AchievedNewGoalEvent -> Konfetti.show(view.konfetti)
+                is ViewGroupViewModel.Event.LeftGroupEvent -> {
+                    showToast("Left group")
+                    findNavController().navigate(R.id.action_view_group_to_group_list)
+                }
+                is ViewGroupViewModel.Event.GroupDeletedEvent -> {
+                    showToast("Group deleted")
+                    findNavController().navigate(R.id.action_view_group_to_group_list)
+                }
+                is ViewGroupViewModel.Event.GroupDisbandedEvent -> {
+                    showToast("Group was disbanded")
+                    findNavController().navigate(R.id.action_view_group_to_group_list)
+                }
             }
         })
+    }
+
+    private fun showToast(msg: String) =
+        Toast.makeText(requireContext(), msg, Toast.LENGTH_SHORT).show()
+
+    private fun showOverflow(view: View) {
+        val popup = PopupMenu(requireContext(), view).apply {
+            setOnMenuItemClickListener {
+                when(it.itemId) {
+                    R.id.delete_group -> {
+                        viewModel.deleteGroup()
+                        true
+                    }
+                    R.id.leave_group -> {
+                        viewModel.leaveGroup()
+                        true
+                    }
+                    else -> false
+                }
+            }
+        }
+        val menuLayout = if(viewModel.isCurrentUserAdmin) R.menu.view_group_admin_menu else  R.menu.view_group_member_menu
+        popup.menuInflater.inflate(menuLayout, popup.menu)
+        popup.show()
     }
 }

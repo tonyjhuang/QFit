@@ -46,6 +46,8 @@ class ViewGroupViewModel(
                 val group = p0.getValue(Group::class.java)
                 group ?: return
                 handleNewGroup(group)
+            } else {
+                _events.postValue(Event.GroupDisbandedEvent())
             }
         }
     }
@@ -54,6 +56,9 @@ class ViewGroupViewModel(
 
     private val _events = SingleLiveEvent<Event>()
     val events: LiveData<Event> = _events
+
+    val isCurrentUserAdmin: Boolean
+    get() = currentUserId == groupData.metadata?.creatorId
 
     fun groupRequested(groupId: String) {
         this.groupId = groupId
@@ -169,9 +174,24 @@ class ViewGroupViewModel(
         return groupGoalAmount in (oldProgressAmount + 1)..newProgressAmount
     }
 
+    fun deleteGroup() {
+        groupRepository.unwatchGroup(groupId, groupListener)
+        groupRepository.delete(groupId) {
+            _events.postValue(Event.GroupDeletedEvent())
+        }
+    }
+
+    fun leaveGroup() {
+        groupRepository.removeMember(groupId, currentUserId) {
+            _events.postValue(Event.LeftGroupEvent())
+        }
+    }
 
     sealed class Event {
         class AchievedNewGoalEvent : Event()
+        class GroupDeletedEvent: Event()
+        class LeftGroupEvent: Event()
+        class GroupDisbandedEvent: Event()
     }
 }
 

@@ -42,7 +42,7 @@ class GroupListViewModel(
     }
 
     private val groupListeners: MutableMap<String, ValueEventListener> = mutableMapOf()
-    private val groupData: MutableMap<String, Group> = mutableMapOf()
+    private var groupData: MutableMap<String, Group> = mutableMapOf()
 
     init {
         currentUserRepository.getCurrentUser { id, user ->
@@ -77,6 +77,7 @@ class GroupListViewModel(
             _groupList.postValue(emptyList())
             return
         }
+        groupData = groupData.filter { it.key in groupIds }.toMutableMap()
         for ((id, listener) in groupListeners) {
             groupRepository.unwatchGroup(id, listener)
         }

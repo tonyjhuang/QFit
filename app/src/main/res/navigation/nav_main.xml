@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/nav_main"
-    app:startDestination="@+id/navigation_home">
+    app:startDestination="@+id/navigation_group_list">
 
     <fragment
         android:id="@+id/navigation_home"
@@ -37,8 +37,14 @@
         tools:layout="@layout/fragment_view_group">
 
         <argument
+            android:defaultValue="-M5PEyB4ereWya9qwePN"
             android:name="group_id"
             app:argType="string"
             app:nullable="false" />
+
+        <action
+            app:enterAnim="@android:anim/fade_in"
+            android:id="@+id/action_view_group_to_group_list"
+            app:destination="@id/navigation_group_list" />
     </fragment>
 </navigation>

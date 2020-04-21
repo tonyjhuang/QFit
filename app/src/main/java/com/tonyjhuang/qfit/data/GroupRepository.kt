@@ -69,7 +69,22 @@ class GroupRepository(
                 userRepository.addGroupMembership(userId, groupId)
                 callback()
             }
+    }
 
+    fun removeMember(groupId: String, userId: String, callback: () -> Unit) {
+        db.child("$PATH/$groupId/members/$userId")
+            .removeValue()
+            .addOnCompleteListener {
+                callback()
+            }
+    }
+
+    fun delete(groupId: String, callback: () -> Unit) {
+        db.child("$PATH/$groupId")
+            .removeValue()
+            .addOnCompleteListener {
+                callback()
+            }
     }
 
     fun create(
@@ -83,13 +98,13 @@ class GroupRepository(
             creatorId = creatorId,
             goals = goals
         )
+        val group = Group(metadata = metadata, members = mapOf(creatorId to true))
         val newGroupRef = db.child(PATH).push()
         val groupId = newGroupRef.key!!
-        newGroupRef.child("metadata").setValue(metadata)
+        newGroupRef.setValue(group)
             .addOnSuccessListener {
-                newGroupRef.child("members/$creatorId").setValue(true)
                 userRepository.addGroupMembership(creatorId, groupId)
-                callback(groupId, Group(metadata = metadata, members = mapOf(creatorId to true)))
+                callback(groupId, group)
             }
     }
 
