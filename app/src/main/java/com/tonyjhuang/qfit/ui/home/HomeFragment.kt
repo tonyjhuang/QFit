@@ -12,6 +12,7 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.bumptech.glide.Glide
 import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
 import com.tonyjhuang.qfit.R
@@ -59,6 +60,11 @@ class HomeFragment : Fragment() {
 
         homeViewModel.header.observe(viewLifecycleOwner, Observer {
             header.text = it
+        })
+        homeViewModel.userPhoto.observe(viewLifecycleOwner, Observer {
+            Glide.with(requireContext())
+                .load(it)
+                .into(view.user_photo)
         })
         adapter = DailyUserProgressRecyclerViewAdapter(object : DailyUserProgressRecyclerViewAdapter.Listener {
             override fun initiateProgressUpdate(goalId: String) {

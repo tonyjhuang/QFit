@@ -22,9 +22,11 @@
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/list"
+        android:layout_marginTop="16dp"
         android:name="com.tonyjhuang.qfit.ui.groups.GroupListFragment"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:padding="8dp"
         android:layout_below="@+id/text_title"
         app:layoutManager="LinearLayoutManager"
         tools:context=".ui.groups.GroupListFragment"

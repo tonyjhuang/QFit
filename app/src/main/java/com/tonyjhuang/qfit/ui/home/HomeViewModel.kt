@@ -28,6 +28,9 @@ class HomeViewModel(
     val header: LiveData<String> = _header
     private lateinit var currentUserId: String
 
+    private val _userPhoto = MutableLiveData<String>()
+    val userPhoto: LiveData<String> = _userPhoto
+
     private lateinit var userGroups: Map<String, Group>
     private lateinit var userGoals: Map<String, Goal>
     private lateinit var userProgress: Map<String, UserProgress>
@@ -60,6 +63,7 @@ class HomeViewModel(
     private fun setUpWatchers() {
         currentUserRepository.getCurrentUser { currentUserId, currentUser ->
             this.currentUserId = currentUserId
+            _userPhoto.postValue(currentUser.photo_url!!)
             val userGroupIds = currentUser.groups?.keys?.toList() ?: emptyList()
             if (userGroupIds.isEmpty()) {
                 _dailyUserProgress.postValue(emptyList())
