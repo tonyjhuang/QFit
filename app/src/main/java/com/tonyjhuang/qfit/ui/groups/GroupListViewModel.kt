@@ -89,11 +89,9 @@ class GroupListViewModel(
     }
 
     private fun notifyDataSetChanged() {
-        val newGroupList = mutableListOf<GroupItem>()
-        for ((id, group) in groupData) {
-            newGroupList.add(GroupItem(id, group.metadata?.name ?: "", group.members?.size ?: 0))
-        }
-        _groupList.postValue(newGroupList)
+        _groupList.postValue(groupData.map { (id, group) ->
+            GroupItem(id, group.metadata?.name ?: "", group.members?.size ?: 0)
+        })
     }
 
     override fun onCleared() {

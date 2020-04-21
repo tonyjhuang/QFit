@@ -60,9 +60,12 @@ class HomeViewModel(
     private fun setUpWatchers() {
         currentUserRepository.getCurrentUser { currentUserId, currentUser ->
             this.currentUserId = currentUserId
-            _dailyUserProgress.postValue(emptyList())
-            val userGroups = currentUser.groups ?: return@getCurrentUser
-            groupRepository.getByIds(userGroups.keys.toList()) {
+            val userGroupIds = currentUser.groups?.keys?.toList() ?: emptyList()
+            if (userGroupIds.isEmpty()) {
+                _dailyUserProgress.postValue(emptyList())
+                return@getCurrentUser
+            }
+            groupRepository.getByIds(userGroupIds) {
                 handleUserGroups(it)
             }
             progressRepository.watchUserDailyProgress(currentUserId, today, userProgressListener)
