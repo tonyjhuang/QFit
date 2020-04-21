@@ -11,6 +11,7 @@ import com.tonyjhuang.qfit.SingleLiveEvent
 import com.tonyjhuang.qfit.data.*
 import com.tonyjhuang.qfit.data.models.Goal
 import com.tonyjhuang.qfit.data.models.Group
+import com.tonyjhuang.qfit.data.models.User
 import com.tonyjhuang.qfit.data.models.UserProgress
 import java.text.SimpleDateFormat
 import java.util.*
@@ -30,6 +31,7 @@ class HomeViewModel(
     val subheader: LiveData<String> = _subheader
 
     private lateinit var currentUserId: String
+    private lateinit var currentUser: User
 
     private val _userPhoto = MutableLiveData<String>()
     val userPhoto: LiveData<String> = _userPhoto
@@ -66,9 +68,9 @@ class HomeViewModel(
     private fun setUpWatchers() {
         currentUserRepository.getCurrentUser { currentUserId, currentUser ->
             this.currentUserId = currentUserId
+            this.currentUser = currentUser
             _userPhoto.postValue(currentUser.photo_url!!)
-            val firstName = currentUser.name!!.substringBefore(" ").capitalize()
-            _subheader.postValue("Welcome back, $firstName. It's time to train.")
+            emitSubheader()
             val userGroupIds = currentUser.groups?.keys?.toList() ?: emptyList()
             if (userGroupIds.isEmpty()) {
                 _dailyUserProgress.postValue(emptyList())
@@ -98,9 +100,21 @@ class HomeViewModel(
     private fun isDataReady() =
         ::userGoals.isInitialized && ::userGroups.isInitialized && ::userProgress.isInitialized
 
+    private fun emitSubheader(finished: Boolean = false) {
+        val firstName = currentUser.name!!.substringBefore(" ").capitalize()
+        val welcomeText = "Welcome back, $firstName. "
+        _subheader.postValue(welcomeText + (if (finished) {
+            "You're all done for today! 🎉"
+        } else {
+            "It's time to train. 🦾"
+        }))
+
+    }
+
     private fun emitChanges() {
         if (!isDataReady()) return
         val res = mutableListOf<DailyUserProgress>()
+        var finishedAllGoals = true
         for (goalId in userGoals.keys) {
             val goalName = userGoals[goalId]!!.name!!
             val progress = userProgress[goalId]?.amount ?: 0
@@ -113,19 +127,22 @@ class HomeViewModel(
                     val groupGoalAmount = groupGoals[goalId]!!.amount
                     totalGroups += 1
                     finishedGroups += if (progress >= groupGoalAmount) 1 else 0
-                    targets.add(GroupTarget(groupId, group.metadata!!.name!!, groupGoalAmount))
+                    targets.add(GroupTarget(groupId, group.metadata.name!!, groupGoalAmount))
                 }
             }
+            val finishedGoal = totalGroups == finishedGroups
+            finishedAllGoals = finishedAllGoals && finishedGoal
             res.add(
                 DailyUserProgress(
                     goalId,
                     goalName,
                     progress,
                     targets,
-                    totalGroups == finishedGroups
+                    finishedGoal
                 )
             )
         }
+        emitSubheader(finishedAllGoals)
         _dailyUserProgress.postValue(res)
     }
 
