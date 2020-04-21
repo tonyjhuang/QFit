@@ -42,7 +42,7 @@ class ProgressRepository(
             groupRepository.getByIds(user.groups?.keys?.toList() ?: emptyList()) { groups ->
                 if (groups.isEmpty()) return@getByIds
                 val groupsToUpdate =
-                    groups.filterValues { it.goals?.containsKey(goalId) == true }.keys
+                    groups.filterValues { it.metadata?.goals?.containsKey(goalId) == true }.keys
                 for (groupId in groupsToUpdate) {
                     db.child("$GROUP_PATH/$groupId/${date.toIso()}/$goalId/$userId/amount")
                         .setValue(newProgressAmount)

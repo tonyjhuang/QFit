@@ -1,8 +1,10 @@
 package com.tonyjhuang.qfit.data
 
 import com.google.firebase.database.*
+import com.tonyjhuang.qfit.QLog
 import com.tonyjhuang.qfit.data.models.Group
 import com.tonyjhuang.qfit.data.models.GroupGoal
+import com.tonyjhuang.qfit.data.models.GroupMetadata
 
 class GroupRepository(
     private val db: DatabaseReference,
@@ -10,7 +12,7 @@ class GroupRepository(
 ) {
     fun getByName(name: String, callback: (String?, Group?) -> Unit) {
         db.child(PATH)
-            .orderByChild("name")
+            .orderByChild("metadata/name")
             .equalTo(name)
             .addListenerForSingleValueEvent(object : ValueEventListener {
                 override fun onCancelled(p0: DatabaseError) {
@@ -31,19 +33,18 @@ class GroupRepository(
     }
 
     fun getById(id: String, callback: (Group?) -> Unit) {
-        db.child(PATH)
-            .child(id)
+        db.child("$PATH/$id")
             .addListenerForSingleValueEvent(GroupValueListener { _, group ->
                 callback(group)
             })
     }
 
     fun watchGroup(id: String, listener: ValueEventListener) {
-        db.child(PATH).child(id).addValueEventListener(listener)
+        db.child("$PATH/$id").addValueEventListener(listener)
     }
 
     fun unwatchGroup(id: String, listener: ValueEventListener) {
-        db.child(PATH).child(id).removeEventListener(listener)
+        db.child("$PATH/$id").removeEventListener(listener)
     }
 
     fun getByIds(ids: List<String>, callback: (Map<String, Group>) -> Unit) {
@@ -77,12 +78,19 @@ class GroupRepository(
         goals: Map<String, GroupGoal>,
         callback: (String, Group) -> Unit
     ) {
-        val group = Group(name = name, members = mapOf(creatorId to true), goals = goals)
-        val newRef = db.child(PATH).push()
-        val groupId = newRef.key!!
-        newRef.setValue(group)
-        userRepository.addGroupMembership(creatorId, groupId)
-        callback(groupId, group)
+        val metadata = GroupMetadata(
+            name = name,
+            creatorId = creatorId,
+            goals = goals
+        )
+        val newGroupRef = db.child(PATH).push()
+        val groupId = newGroupRef.key!!
+        newGroupRef.child("metadata").setValue(metadata)
+            .addOnSuccessListener {
+                newGroupRef.child("members/$creatorId").setValue(true)
+                userRepository.addGroupMembership(creatorId, groupId)
+                callback(groupId, Group(metadata = metadata, members = mapOf(creatorId to true)))
+            }
     }
 
     class GroupValueListener(private val callback: (String?, Group?) -> Unit) : ValueEventListener {

@@ -63,7 +63,7 @@ class HomeViewModel(
             _dailyUserProgress.postValue(emptyList())
             val userGroups = currentUser.groups ?: return@getCurrentUser
             groupRepository.getByIds(userGroups.keys.toList()) {
-                handleUserGroups(it.filterValues { it != null } as Map<String, Group>)
+                handleUserGroups(it)
             }
             progressRepository.watchUserDailyProgress(currentUserId, today, userProgressListener)
         }
@@ -71,7 +71,7 @@ class HomeViewModel(
 
     private fun handleUserGroups(userGroups: Map<String, Group>) {
         this.userGroups = userGroups
-        val allGoalIds = userGroups.values.flatMap { it.goals?.keys ?: emptySet() }
+        val allGoalIds = userGroups.values.flatMap { it.metadata?.goals?.keys ?: emptySet() }
         goalRepository.getByIds(allGoalIds) {
             this.userGoals = it
             emitChanges()
@@ -96,12 +96,12 @@ class HomeViewModel(
             var totalGroups = 0
             var finishedGroups = 0
             for ((groupId, group) in userGroups) {
-                val groupGoals = group.goals ?: continue
+                val groupGoals = group.metadata?.goals ?: continue
                 if (groupGoals.keys.contains(goalId)) {
                     val groupGoalAmount = groupGoals[goalId]!!.amount
                     totalGroups += 1
                     finishedGroups += if (progress >= groupGoalAmount) 1 else 0
-                    targets.add(GroupTarget(groupId, group.name!!, groupGoalAmount))
+                    targets.add(GroupTarget(groupId, group.metadata!!.name!!, groupGoalAmount))
                 }
             }
             res.add(
@@ -138,7 +138,7 @@ class HomeViewModel(
         var achievedGoals = 0
         var newlyAchievedGoals = 0
         for (group in userGroups.values) {
-            val groupGoalAmount = group.goals?.get(goalId)?.amount ?: continue
+            val groupGoalAmount = group.metadata?.goals?.get(goalId)?.amount ?: continue
             achievedGoals += if (oldProgressAmount >= groupGoalAmount) 1 else 0
             newlyAchievedGoals += if (newProgressAmount >= groupGoalAmount) 1 else 0
         }

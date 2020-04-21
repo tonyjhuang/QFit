@@ -65,10 +65,10 @@ class ViewGroupViewModel(
 
     private fun handleNewGroup(group: Group) {
         groupData = group
-        _groupName.postValue(group.name)
+        _groupName.postValue(group.metadata!!.name!!)
 
         val memberIds = group.members?.keys?.toList() ?: emptyList()
-        val groupGoals = group.goals ?: return
+        val groupGoals = group.metadata.goals ?: return
         goalRepository.getByIds(groupGoals.keys.toList()) {
             groupGoalData = it
             userRepository.getByIds(memberIds) {
@@ -105,7 +105,7 @@ class ViewGroupViewModel(
     private fun generateAndEmitGroupGoalProgressView(serverGroupProgress: Map<String, Map<String, UserProgress>>) {
         val res = mutableMapOf<String, GroupGoalProgressView>()
         for ((goalId, goal) in groupGoalData) {
-            val groupGoal = groupData.goals?.get(goalId) ?: continue
+            val groupGoal = groupData.metadata?.goals?.get(goalId) ?: continue
             res[goalId] =
                 GroupGoalProgressView(
                     goalId,
@@ -122,7 +122,7 @@ class ViewGroupViewModel(
         serverUserProgress: Map<String, UserProgress>?
     ): List<CurrentUserProgress> {
         val res = mutableListOf<CurrentUserProgress>()
-        val groupGoalTarget = groupData.goals?.get(goalId)?.amount ?: 0
+        val groupGoalTarget = groupData.metadata?.goals?.get(goalId)?.amount ?: 0
         for ((userId, user) in userData) {
             val userProgressAmount = serverUserProgress?.get(userId)?.amount ?: 0
             res.add(
@@ -165,7 +165,7 @@ class ViewGroupViewModel(
         oldProgressAmount: Int,
         newProgressAmount: Int
     ): Boolean {
-        val groupGoalAmount = groupData.goals?.get(goalId)?.amount ?: return false
+        val groupGoalAmount = groupData.metadata?.goals?.get(goalId)?.amount ?: return false
         return groupGoalAmount in (oldProgressAmount + 1)..newProgressAmount
     }
 

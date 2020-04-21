@@ -14,17 +14,15 @@ FIREBASE DATA SCHEMA
     "$group_id": {
       "metadata": {
         "name": "runners club"
-        "creator_id": "..."
-        "created_at": "$date",
+        "creator_id": "...",
+        "goals": {
+          "$goal_id": {
+            "amount": 40  # current daily goal
+          }
+        }
       },
       "members": {  # Member list
         "$user_id": true
-      },
-      "goals": {
-        "$goal_id": {
-          "amount": 40  # current daily goal
-
-        }
       }
     }
   },
