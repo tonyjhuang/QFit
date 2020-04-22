@@ -66,7 +66,6 @@ class GroupRepository(
         db.child("$PATH/$groupId/members/$userId")
             .setValue(true)
             .addOnCompleteListener {
-                userRepository.addGroupMembership(userId, groupId)
                 callback()
             }
     }
@@ -103,7 +102,6 @@ class GroupRepository(
         val groupId = newGroupRef.key!!
         newGroupRef.setValue(group)
             .addOnSuccessListener {
-                userRepository.addGroupMembership(creatorId, groupId)
                 callback(groupId, group)
             }
     }

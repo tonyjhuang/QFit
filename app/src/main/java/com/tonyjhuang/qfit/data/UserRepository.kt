@@ -32,26 +32,6 @@ class UserRepository(private val db: DatabaseReference) {
             .addOnFailureListener { callback(null) }
     }
 
-    fun addGroupMembership(id: String, groupId: String) {
-        db.child("$PATH/$id/groups/$groupId")
-            .setValue(true)
-    }
-
-    fun removeGroupMembership(id: String, groupId: String) {
-        db.child("$PATH/$id/groups/$groupId")
-            .removeValue()
-    }
-
-    fun watchUser(id: String, changeListener: ValueEventListener) {
-        db.child("$PATH/$id")
-            .addValueEventListener(changeListener)
-    }
-
-    fun unwatchUser(id: String, changeListener: ValueEventListener) {
-        db.child("$PATH/$id")
-            .removeEventListener(changeListener)
-    }
-
     fun watchUserGroups(id: String, changeListener: ValueEventListener) {
         db.child("$PATH/$id/groups")
             .addValueEventListener(changeListener)
