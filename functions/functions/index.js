@@ -65,28 +65,92 @@ exports.copyUserProgressToGroupProgress = functions
 		  return {};
 	      });
 
-	function addNewUserGroupProgress(goalId, amount) {
-	    return root
-		.child(`group_progress/${groupId}/${dateStr}/${goalId}/${memberId}/amount`)
-		.set(amount);
-	}
-	
 	return Promise.all([getUserProgress, getGroupGoalIds])
 	    .then((values) => {
 		const [userProgress, groupGoalIds] = values;
 		const updateGroupProgressTasks = [];
-		
+
 		for (const userGoalId in userProgress) {
 		    if (!groupGoalIds.includes(userGoalId)) {
-			continue;
+			delete userProgress[userGoalId];
 		    }
-		    const userProgressAmount = userProgress[groupGoalIds].amount;
-		    updateGroupProgressTasks.push(
-			addNewUserGroupProgress(userGoalId, userProgressAmount));
 		}
-		
-		return Promise.all(updateGroupProgressTasks);
+		return addUserProgress(root, memberId, groupId, userProgress);
 	    });
+    });
+
+function addUserProgress(root, userId, groupId, userProgress) {
+    function addNewUserGroupProgress(goalId, amount) {
+	return root
+	    .child(`group_progress/${groupId}/${getDateStr()}/${goalId}/${userId}/amount`)
+	    .set(amount);
+    }
+
+    const updateGroupProgressTasks = [];
+    for (const goalId in userProgress) {
+	const userProgressAmount = userProgress[goalId].amount;
+	updateGroupProgressTasks.push(
+	    addNewUserGroupProgress(goalId, userProgressAmount));
+    }
+    
+    return Promise.all(updateGroupProgressTasks);
+}
+
+
+exports.propagateUserProgress = functions
+    .database
+    .ref('/user_progress/{userId}/{dateStr}/{goalId}/amount')
+    .onUpdate((snapshot, context) => {
+	const userId = context.params.userId;
+	const dateStr = context.params.dateStr;
+	const goalId = context.params.goalId;
+	const root = snapshot.ref.root;
+	const amount = snapshot.val();
+
+	function doesGroupHaveGoal(groupId) {
+	    return root
+		.child(`groups/${groupId}/metadata/goals/${goalId}`)
+		.once('value')
+		.then((goals) => {
+		    if (goals.exists()) {
+			return [groupId, true];
+		    }
+		    return [groupId, false];
+		});
+	}
+
+	function updateGroupGoalProgress(groupId) {
+	    return root
+		.child(`group_progress/${groupId}/${dateStr}/${goalId}/${userId}/amount`)
+		.set(amount);
+	}
+
+	const getUserGroups = root
+	      .child(`users/${userId}/groups`)
+	      .once('value')
+	      .then((userGroups) => {
+		  if (userGroups.exists()) {
+		      return Object.keys(userGroups.val());		      
+		  }
+		  return [];
+	      })
+	      .then((groupIds) => {
+		  const checkGoalInclusionTasks = [];
+		  for (const groupId in groupIds) {
+		      checkGoalInclusionTasks.push(doesGroupHaveGoal(groupId));
+		  }
+		  return Promise.all(checkGoalInclusionTasks);
+	      })
+	      .then((groupUpdateEligibility) => {
+		  const updateGroupProgressTasks = [];
+		  for (const [groupId, eligible] in groupUpdateEligibility) {
+		      if (!eligible) {
+			  continue;
+		      }
+		      updateGroupProgressTasks.push(updateGroupGoalProgress(groupId));
+		  }
+		  return Promise.all(updateGroupProgressTasks);
+	      });
     });
 
 

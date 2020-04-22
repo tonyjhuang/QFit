@@ -6,6 +6,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.GenericTypeIndicator
+import com.tonyjhuang.qfit.QTime
 import com.tonyjhuang.qfit.SimpleValueEventListener
 import com.tonyjhuang.qfit.SingleLiveEvent
 import com.tonyjhuang.qfit.data.*
@@ -38,7 +39,7 @@ class ViewGroupViewModel(
 
     private val groupDailyProgressListener = GroupDailyProgressListener()
 
-    private val today = Calendar.getInstance().time
+    private val today = QTime.today
     private lateinit var groupId: String
     private val groupListener = object : SimpleValueEventListener() {
         override fun onDataChange(p0: DataSnapshot) {
