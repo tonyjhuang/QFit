@@ -37,6 +37,20 @@ exports.removeGroupMemberCascade = functions
 	      .remove();
     });
 
+
+exports.addGroupMemberCascade = functions
+    .database
+    .ref('/groups/{groupId}/members/{memberId}')
+    .onCreate((snapshot, context) => {
+	const memberId = context.params.memberId;
+	const groupId = context.params.groupId;
+	return snapshot
+	      .ref
+	      .root
+	      .child(`users/${memberId}/groups/${groupId}`)
+	      .set(true);
+    });
+
 exports.copyUserProgressToGroupProgress = functions
     .database
     .ref('/groups/{groupId}/members/{memberId}')
@@ -81,6 +95,7 @@ exports.copyUserProgressToGroupProgress = functions
 
 function addUserProgress(root, userId, groupId, userProgress) {
     function addNewUserGroupProgress(goalId, amount) {
+	console.log(`setting ${`group_progress/${groupId}/${getDateStr()}/${goalId}/${userId}/amount`} to ${amount}`);
 	return root
 	    .child(`group_progress/${groupId}/${getDateStr()}/${goalId}/${userId}/amount`)
 	    .set(amount);
@@ -100,12 +115,12 @@ function addUserProgress(root, userId, groupId, userProgress) {
 exports.propagateUserProgress = functions
     .database
     .ref('/user_progress/{userId}/{dateStr}/{goalId}/amount')
-    .onUpdate((snapshot, context) => {
+    .onUpdate((change, context) => {
 	const userId = context.params.userId;
 	const dateStr = context.params.dateStr;
 	const goalId = context.params.goalId;
-	const root = snapshot.ref.root;
-	const amount = snapshot.val();
+	const root = change.after.ref.root;
+	const amount = change.after.val();
 
 	function doesGroupHaveGoal(groupId) {
 	    return root
@@ -113,19 +128,25 @@ exports.propagateUserProgress = functions
 		.once('value')
 		.then((goals) => {
 		    if (goals.exists()) {
+			console.log(goals.val());
 			return [groupId, true];
 		    }
+		    console.log(`${groupId} does not have goals`);
 		    return [groupId, false];
 		});
 	}
 
 	function updateGroupGoalProgress(groupId) {
+	    const path = `group_progress/${groupId}/${dateStr}/${goalId}/${userId}/amount`;
+	    console.log(`settingf ${path} to ${amount}`);
 	    return root
-		.child(`group_progress/${groupId}/${dateStr}/${goalId}/${userId}/amount`)
+		.child(path)
 		.set(amount);
 	}
 
-	const getUserGroups = root
+	console.log("are we running");
+	
+	return root
 	      .child(`users/${userId}/groups`)
 	      .once('value')
 	      .then((userGroups) => {
@@ -135,20 +156,23 @@ exports.propagateUserProgress = functions
 		  return [];
 	      })
 	      .then((groupIds) => {
+		  console.log(groupIds);
 		  const checkGoalInclusionTasks = [];
-		  for (const groupId in groupIds) {
+		  groupIds.forEach(groupId => {
 		      checkGoalInclusionTasks.push(doesGroupHaveGoal(groupId));
-		  }
+		  });
 		  return Promise.all(checkGoalInclusionTasks);
 	      })
 	      .then((groupUpdateEligibility) => {
 		  const updateGroupProgressTasks = [];
-		  for (const [groupId, eligible] in groupUpdateEligibility) {
-		      if (!eligible) {
-			  continue;
+		  console.log(groupUpdateEligibility);
+		  groupUpdateEligibility.forEach(eligibility => {
+		      const [groupId, isEligible] = eligibility;
+		      if (!isEligible) {
+			  return;
 		      }
 		      updateGroupProgressTasks.push(updateGroupGoalProgress(groupId));
-		  }
+		  });
 		  return Promise.all(updateGroupProgressTasks);
 	      });
     });
