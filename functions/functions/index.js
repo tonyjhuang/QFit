@@ -95,7 +95,6 @@ exports.copyUserProgressToGroupProgress = functions
 
 function addUserProgress(root, userId, groupId, userProgress) {
     function addNewUserGroupProgress(goalId, amount) {
-	console.log(`setting ${`group_progress/${groupId}/${getDateStr()}/${goalId}/${userId}/amount`} to ${amount}`);
 	return root
 	    .child(`group_progress/${groupId}/${getDateStr()}/${goalId}/${userId}/amount`)
 	    .set(amount);
@@ -128,24 +127,19 @@ exports.propagateUserProgress = functions
 		.once('value')
 		.then((goals) => {
 		    if (goals.exists()) {
-			console.log(goals.val());
 			return [groupId, true];
 		    }
-		    console.log(`${groupId} does not have goals`);
 		    return [groupId, false];
 		});
 	}
 
 	function updateGroupGoalProgress(groupId) {
 	    const path = `group_progress/${groupId}/${dateStr}/${goalId}/${userId}/amount`;
-	    console.log(`settingf ${path} to ${amount}`);
 	    return root
 		.child(path)
 		.set(amount);
 	}
 
-	console.log("are we running");
-	
 	return root
 	      .child(`users/${userId}/groups`)
 	      .once('value')
@@ -156,7 +150,6 @@ exports.propagateUserProgress = functions
 		  return [];
 	      })
 	      .then((groupIds) => {
-		  console.log(groupIds);
 		  const checkGoalInclusionTasks = [];
 		  groupIds.forEach(groupId => {
 		      checkGoalInclusionTasks.push(doesGroupHaveGoal(groupId));
@@ -165,7 +158,6 @@ exports.propagateUserProgress = functions
 	      })
 	      .then((groupUpdateEligibility) => {
 		  const updateGroupProgressTasks = [];
-		  console.log(groupUpdateEligibility);
 		  groupUpdateEligibility.forEach(eligibility => {
 		      const [groupId, isEligible] = eligibility;
 		      if (!isEligible) {
