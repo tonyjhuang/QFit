@@ -114,7 +114,10 @@ function addUserProgress(root, userId, groupId, userProgress) {
 exports.propagateUserProgress = functions
     .database
     .ref('/user_progress/{userId}/{dateStr}/{goalId}/amount')
-    .onUpdate((change, context) => {
+    .onWrite((change, context) => {
+	if (!change.after.exists()) {
+	    return null;
+	}
 	const userId = context.params.userId;
 	const dateStr = context.params.dateStr;
 	const goalId = context.params.goalId;
