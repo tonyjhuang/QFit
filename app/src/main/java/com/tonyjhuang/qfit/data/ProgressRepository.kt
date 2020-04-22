@@ -36,19 +36,6 @@ class ProgressRepository(
         newProgressAmount: Int
     ) {
         db.child("$USER_PATH/$userId/${date.toIso()}/$goalId/amount").setValue(newProgressAmount)
-
-        userRepository.getById(userId) { user ->
-            user ?: return@getById
-            groupRepository.getByIds(user.groups?.keys?.toList() ?: emptyList()) { groups ->
-                if (groups.isEmpty()) return@getByIds
-                val groupsToUpdate =
-                    groups.filterValues { it.metadata?.goals?.containsKey(goalId) == true }.keys
-                for (groupId in groupsToUpdate) {
-                    db.child("$GROUP_PATH/$groupId/${date.toIso()}/$goalId/$userId/amount")
-                        .setValue(newProgressAmount)
-                }
-            }
-        }
     }
 
     fun watchGroupDailyProress(groupId: String, date: Date, listener: ValueEventListener) {
